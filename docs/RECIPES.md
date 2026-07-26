@@ -1,6 +1,6 @@
 # Recipes
 
-Concrete things you can do with AthenaCore, in rough order of how likely you are
+Concrete things you can do with Crucible, in rough order of how likely you are
 to want them.
 
 ## Return to a topic weeks later
@@ -10,8 +10,8 @@ since last month - no new research, just a report of where things stand, built
 from what the agents established and disputed.
 
 ```bash
-athenacore run "" --topic batteries --preset catch-up
-athenacore timeline --topic batteries        # or read the full history
+crucible run "" --topic batteries --preset catch-up
+crucible timeline --topic batteries        # or read the full history
 ```
 
 ## Understand why a memory surfaced
@@ -19,7 +19,7 @@ athenacore timeline --topic batteries        # or read the full history
 The single most useful debugging command in the project:
 
 ```bash
-athenacore recall "water usage" --topic batteries --explain
+crucible recall "water usage" --topic batteries --explain
 ```
 
 ```
@@ -29,18 +29,18 @@ research · research · 2026-07-24 09:12
 ```
 
 Reading the breakdown tells you which weight to change. If irrelevant-but-recent
-entries dominate, lower `ATHENA_RECALL_W_RECENCY`. If you get five paraphrases of
-one point, lower `ATHENA_RECALL_MMR_LAMBDA`.
+entries dominate, lower `CRUCIBLE_RECALL_W_RECENCY`. If you get five paraphrases of
+one point, lower `CRUCIBLE_RECALL_MMR_LAMBDA`.
 
 ## Pin something the agents must not forget
 
 Salience feeds the ranking directly, and notes are protected from compaction:
 
 ```python
-from athenacore import SqliteMemoryStore
-from athenacore.memory import Entry, EntryKind
+from crucible import SqliteMemoryStore
+from crucible.memory import Entry, EntryKind
 
-store = SqliteMemoryStore("data/athenacore.sqlite3")
+store = SqliteMemoryStore("data/crucible.sqlite3")
 store.add_entry(
     Entry(
         topic="batteries",
@@ -57,25 +57,25 @@ Or from the UI: Memory view → expand an entry → adjust its salience.
 ## Run a debate that ends when it should
 
 ```bash
-athenacore debate "Will sodium-ion displace lithium in grid storage?" \
+crucible debate "Will sodium-ion displace lithium in grid storage?" \
   --topic batteries --rounds 6
 ```
 
 It will usually stop before round six. The transcript records the similarity
 between consecutive rounds, so you can see *why* it stopped. If debates end too
-early, raise `ATHENA_DEBATE_CONVERGENCE` toward 0.98.
+early, raise `CRUCIBLE_DEBATE_CONVERGENCE` toward 0.98.
 
 Change who argues:
 
 ```bash
-athenacore debate "..." --topic t --participants research critic insight --judge synthesizer
-athenacore debate "..." --topic t --no-judge     # leave it unresolved
+crucible debate "..." --topic t --participants research critic insight --judge synthesizer
+crucible debate "..." --topic t --no-judge     # leave it unresolved
 ```
 
 ## Build a custom workflow
 
 ```python
-from athenacore import AgentGraph, GraphNode, Orchestrator, Settings, SqliteMemoryStore
+from crucible import AgentGraph, GraphNode, Orchestrator, Settings, SqliteMemoryStore
 
 graph = AgentGraph(
     [
@@ -144,8 +144,8 @@ recall that understands synonyms:
 
 ```python
 from sentence_transformers import SentenceTransformer
-from athenacore.memory import CallableEmbedder
-from athenacore.orchestration import Orchestrator
+from crucible.memory import CallableEmbedder
+from crucible.orchestration import Orchestrator
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 embedder = CallableEmbedder(
@@ -158,13 +158,13 @@ orchestrator = Orchestrator(store, settings=settings, embedder=embedder)
 Then re-index existing memory, since the vectors changed dimension:
 
 ```bash
-athenacore reindex
+crucible reindex
 ```
 
 ## Stream a run into your own application
 
 ```python
-from athenacore.orchestration import EventType
+from crucible.orchestration import EventType
 
 
 def on_event(event):
@@ -191,27 +191,27 @@ Every command speaks JSON:
 
 ```bash
 # Just the adjudicated conclusion
-athenacore run "..." --topic t --json | jq -r '.results.synthesizer.content'
+crucible run "..." --topic t --json | jq -r '.results.synthesizer.content'
 
 # What did this cost?
-athenacore run "..." --topic t --json | jq '.run.usage'
+crucible run "..." --topic t --json | jq '.run.usage'
 
 # Which agents failed?
-athenacore run "..." --topic t --json | jq '.results | to_entries
+crucible run "..." --topic t --json | jq '.results | to_entries
   | map(select(.value.error)) | map({(.key): .value.error})'
 
 # Nightly digest across every topic
-for topic in $(athenacore topics --json | jq -r '.[].name'); do
-  athenacore export --topic "$topic" --format md -o "reports/$topic.md"
+for topic in $(crucible topics --json | jq -r '.[].name'); do
+  crucible export --topic "$topic" --format md -o "reports/$topic.md"
 done
 ```
 
 ## Run entirely offline, forever
 
 ```bash
-export ATHENA_MODEL=ollama:llama3.1
-export ATHENA_WEB_SEARCH_ENABLED=false     # the default
-export ATHENA_EMBEDDINGS_ENABLED=true      # the built-in embedder is local
+export CRUCIBLE_MODEL=ollama:llama3.1
+export CRUCIBLE_WEB_SEARCH_ENABLED=false     # the default
+export CRUCIBLE_EMBEDDINGS_ENABLED=true      # the built-in embedder is local
 ```
 
 Nothing leaves the machine. The memory is one SQLite file you own.
@@ -221,11 +221,11 @@ Nothing leaves the machine. The memory is one SQLite file you own.
 7B-class models need a tighter context and cheaper workflows:
 
 ```bash
-export ATHENA_CONTEXT_TOKEN_BUDGET=2500     # less recalled memory per prompt
-export ATHENA_MAX_OUTPUT_TOKENS=700
-export ATHENA_RECALL_MAX_ENTRIES=6
-export ATHENA_MAX_PARALLEL_AGENTS=2         # avoid thrashing one GPU
-athenacore run "..." --topic t --preset brief
+export CRUCIBLE_CONTEXT_TOKEN_BUDGET=2500     # less recalled memory per prompt
+export CRUCIBLE_MAX_OUTPUT_TOKENS=700
+export CRUCIBLE_RECALL_MAX_ENTRIES=6
+export CRUCIBLE_MAX_PARALLEL_AGENTS=2         # avoid thrashing one GPU
+crucible run "..." --topic t --preset brief
 ```
 
 Larger hosted models can go the other way - raise the budget, use `deep-dive`,
@@ -236,7 +236,7 @@ and increase parallelism.
 It is just SQLite. Nothing is hidden from you:
 
 ```bash
-sqlite3 data/athenacore.sqlite3 \
+sqlite3 data/crucible.sqlite3 \
   "SELECT agent, kind, salience, substr(content,1,60)
      FROM entries WHERE topic='batteries' AND archived=0
      ORDER BY created_at DESC LIMIT 10;"
@@ -245,6 +245,6 @@ sqlite3 data/athenacore.sqlite3 \
 ## Back up and move memory
 
 ```bash
-cp data/athenacore.sqlite3 backups/athenacore-$(date +%F).sqlite3
-athenacore export --topic batteries --format json -o batteries.json
+cp data/crucible.sqlite3 backups/crucible-$(date +%F).sqlite3
+crucible export --topic batteries --format json -o batteries.json
 ```

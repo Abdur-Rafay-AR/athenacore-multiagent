@@ -4,7 +4,7 @@
 
 Please **do not** open a public issue for a security vulnerability.
 
-Use GitHub's [private vulnerability reporting](https://github.com/Abdur-Rafay-AR/athenacore-multiagent/security/advisories/new),
+Use GitHub's [private vulnerability reporting](https://github.com/Abdur-Rafay-AR/crucible/security/advisories/new),
 or contact the maintainer through their GitHub profile. Include what the issue is,
 how to reproduce it, and what an attacker could achieve. Expect an initial response
 within a few days.
@@ -16,7 +16,7 @@ long-term support branches.
 
 ## Threat model
 
-AthenaCore is a **local-first, single-user tool**. It assumes the operator trusts
+Crucible is a **local-first, single-user tool**. It assumes the operator trusts
 the machine it runs on and the model it is pointed at. That assumption shapes what
 counts as a vulnerability here.
 
@@ -38,7 +38,7 @@ counts as a vulnerability here.
 
 ### Known limitations, by design
 
-- **The API has no authentication.** `athenacore serve` binds to `127.0.0.1` and
+- **The API has no authentication.** `crucible serve` binds to `127.0.0.1` and
   sends permissive CORS headers, because it is meant for local use. **Do not expose
   it to a network** without putting authentication and a tightened CORS policy in
   front of it.
@@ -58,6 +58,6 @@ If you must run this beyond your own machine:
 
 1. Put the API behind a reverse proxy with authentication.
 2. Replace the wildcard CORS policy in `api/server.py`.
-3. Set `ATHENA_WEB_SEARCH_ENABLED=false` and leave write-capable tools disabled.
+3. Set `CRUCIBLE_WEB_SEARCH_ENABLED=false` and leave write-capable tools disabled.
 4. Run as an unprivileged user with the database on a restricted volume.
 5. Rate-limit run creation; a single request can trigger many model calls.

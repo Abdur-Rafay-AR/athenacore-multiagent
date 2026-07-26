@@ -10,16 +10,16 @@ import json
 
 import pytest
 
-from athenacore.cli import main
+from crucible.cli import main
 
 
 @pytest.fixture(autouse=True)
 def offline_env(tmp_path, monkeypatch):
     """Point every command at an isolated database and the offline provider."""
-    monkeypatch.setenv("ATHENA_MODEL", "echo:test")
-    monkeypatch.setenv("ATHENA_DATABASE_PATH", str(tmp_path / "cli.sqlite3"))
-    monkeypatch.setenv("ATHENA_DATA_DIR", str(tmp_path))
-    monkeypatch.setenv("ATHENA_LOG_LEVEL", "ERROR")
+    monkeypatch.setenv("CRUCIBLE_MODEL", "echo:test")
+    monkeypatch.setenv("CRUCIBLE_DATABASE_PATH", str(tmp_path / "cli.sqlite3"))
+    monkeypatch.setenv("CRUCIBLE_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("CRUCIBLE_LOG_LEVEL", "ERROR")
     return tmp_path
 
 
@@ -137,8 +137,8 @@ def client(tmp_path):
     pytest.importorskip("httpx", reason="TestClient requires httpx")
     from fastapi.testclient import TestClient
 
-    from athenacore.api.server import create_app
-    from athenacore.config import Settings
+    from crucible.api.server import create_app
+    from crucible.config import Settings
 
     app = create_app(
         Settings(

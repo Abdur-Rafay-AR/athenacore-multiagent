@@ -14,17 +14,17 @@ st = pytest.importorskip("streamlit", reason="requires the [ui] extra")
 
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
-from athenacore.ui import theme  # noqa: E402
+from crucible.ui import theme  # noqa: E402
 
-APP = "src/athenacore/ui/app.py"
+APP = "src/crucible/ui/app.py"
 VIEWS = ["Console", "Memory", "Timeline", "Runs", "Analytics"]
 
 
 @pytest.fixture(autouse=True)
 def offline_env(tmp_path, monkeypatch):
-    monkeypatch.setenv("ATHENA_MODEL", "echo:test")
-    monkeypatch.setenv("ATHENA_DATABASE_PATH", str(tmp_path / "ui.sqlite3"))
-    monkeypatch.setenv("ATHENA_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("CRUCIBLE_MODEL", "echo:test")
+    monkeypatch.setenv("CRUCIBLE_DATABASE_PATH", str(tmp_path / "ui.sqlite3"))
+    monkeypatch.setenv("CRUCIBLE_DATA_DIR", str(tmp_path))
 
 
 @pytest.mark.parametrize("view", VIEWS)
@@ -38,7 +38,7 @@ def test_every_view_renders_on_an_empty_database(view):
 
 def test_a_full_run_completes_through_the_ui(tmp_path):
     # The Console shows an empty state until a topic exists, so seed one.
-    from athenacore.memory.sqlite_store import SqliteMemoryStore
+    from crucible.memory.sqlite_store import SqliteMemoryStore
 
     store = SqliteMemoryStore(tmp_path / "ui.sqlite3")
     store.ensure_topic("scaling")
@@ -64,7 +64,7 @@ class TestTheme:
         assert "&lt;script&gt;" in html
 
     def test_every_entry_kind_has_a_colour(self):
-        from athenacore.memory.models import EntryKind
+        from crucible.memory.models import EntryKind
 
         for kind in EntryKind:
             assert kind.value in theme.KIND_COLOURS

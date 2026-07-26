@@ -56,7 +56,7 @@ coverage.xml
 *.pem
 *.key
 
-# --- AthenaCore runtime data ---
+# --- Crucible runtime data ---
 data/
 *.sqlite3
 *.sqlite3-journal
@@ -64,7 +64,7 @@ data/
 *.sqlite3-shm
 memory/memory_store.json
 exports/
-.athenacore/
+.crucible/
 
 # --- OS noise ---
 .DS_Store

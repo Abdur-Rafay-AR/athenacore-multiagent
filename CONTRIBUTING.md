@@ -6,8 +6,8 @@ can land quickly.
 ## Setup
 
 ```bash
-git clone https://github.com/Abdur-Rafay-AR/athenacore-multiagent
-cd athenacore-multiagent
+git clone https://github.com/Abdur-Rafay-AR/crucible
+cd crucible
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev,api,ui]"
 pytest
@@ -29,9 +29,9 @@ drives a full CLI run.
 
 ## The one rule that matters
 
-**The core must stay dependency-free.** `athenacore.memory`,
-`athenacore.agents`, `athenacore.llm`, `athenacore.tools`,
-`athenacore.orchestration` and the CLI import only the standard library. That is
+**The core must stay dependency-free.** `crucible.memory`,
+`crucible.agents`, `crucible.llm`, `crucible.tools`,
+`crucible.orchestration` and the CLI import only the standard library. That is
 not aesthetic minimalism - it is why the project installs and runs anywhere, and
 CI enforces it.
 
@@ -47,8 +47,8 @@ If you need a third-party package:
 An agent is a role, a recall policy and a prompt:
 
 ```python
-from athenacore.agents import Agent, RecallPolicy, register_agent
-from athenacore.memory import EntryKind
+from crucible.agents import Agent, RecallPolicy, register_agent
+from crucible.memory import EntryKind
 
 
 @register_agent
@@ -87,8 +87,8 @@ memory. `tests/test_engine.py::TestAgents` has the pattern.
 ## Adding a tool
 
 ```python
-from athenacore.tools import Tool
-from athenacore.errors import ToolError
+from crucible.tools import Tool
+from crucible.errors import ToolError
 
 
 class MyTool(Tool):
@@ -124,10 +124,10 @@ Write commit messages that explain the reasoning, not just the diff. One logical
 change per commit.
 
 In the PR, say what you changed, why, and how you verified it. If you changed
-retrieval or prompts, include a before/after - `athenacore recall --explain` is
+retrieval or prompts, include a before/after - `crucible recall --explain` is
 the right evidence for ranking changes.
 
 ## Reporting bugs
 
-Include the output of `athenacore doctor`, the command you ran, and what you
+Include the output of `crucible doctor`, the command you ran, and what you
 expected. That covers the environmental causes, which is most of them.

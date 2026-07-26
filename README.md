@@ -1,13 +1,13 @@
 <div align="center">
 
-# 🏛️ AthenaCore
+# ⚗️ Crucible
 
 **Multi-agent collaboration with a memory that actually remembers.**
 
 Agents research, attack each other's conclusions, and adjudicate - over a shared,
 searchable, self-compacting memory that survives across sessions.
 
-[![CI](https://github.com/Abdur-Rafay-AR/athenacore-multiagent/actions/workflows/ci.yml/badge.svg)](https://github.com/Abdur-Rafay-AR/athenacore-multiagent/actions/workflows/ci.yml)
+[![CI](https://github.com/Abdur-Rafay-AR/crucible/actions/workflows/ci.yml/badge.svg)](https://github.com/Abdur-Rafay-AR/crucible/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Zero core dependencies](https://img.shields.io/badge/core%20deps-0-brightgreen.svg)](pyproject.toml)
@@ -25,7 +25,7 @@ Most "multi-agent" demos are one model called in a loop with the transcript past
 back in. Two things break immediately: the transcript outgrows the context window,
 and the agents never really disagree - they politely restate each other.
 
-AthenaCore attacks both problems directly.
+Crucible attacks both problems directly.
 
 **Memory is a real retrieval system, not a transcript.** Every contribution is an
 immutable, typed entry in a SQLite database. Recall blends BM25 full-text search,
@@ -44,7 +44,7 @@ And it runs on your laptop. The core engine has **zero dependencies** - standard
 library only - and the default model is a local one through Ollama.
 
 ```
-$ athenacore run "Is refining capacity the real EV bottleneck by 2030?" \
+$ crucible run "Is refining capacity the real EV bottleneck by 2030?" \
     --topic batteries --preset red-team
 
   ▶ red-team · 5 nodes · topic 'batteries'
@@ -75,7 +75,7 @@ it exercises the entire system, so you can see the machinery before committing t
 download:
 
 ```bash
-athenacore run "Does compute scaling still predict capability?" \
+crucible run "Does compute scaling still predict capability?" \
   --topic scaling --preset brief --model echo:test
 ```
 
@@ -83,24 +83,24 @@ athenacore run "Does compute scaling still predict capability?" \
 
 ```bash
 ollama pull llama3.1
-athenacore run "Does compute scaling still predict capability?" --topic scaling
+crucible run "Does compute scaling still predict capability?" --topic scaling
 ```
 
 Or a hosted one:
 
 ```bash
-export ATHENA_MODEL=openai:gpt-4o-mini
-export ATHENA_OPENAI_API_KEY=sk-...
+export CRUCIBLE_MODEL=openai:gpt-4o-mini
+export CRUCIBLE_OPENAI_API_KEY=sk-...
 ```
 
 **Launch the control room:**
 
 ```bash
-athenacore ui        # Streamlit app on :8501
-athenacore serve     # REST + SSE API on :8000, docs at /docs
+crucible ui        # Streamlit app on :8501
+crucible serve     # REST + SSE API on :8000, docs at /docs
 ```
 
-Something not working? `athenacore doctor` checks your provider, database,
+Something not working? `crucible doctor` checks your provider, database,
 full-text index and optional extras, and tells you what to do about each.
 
 ---
@@ -147,7 +147,7 @@ Every recalled entry keeps its score breakdown, so you can always ask *why* a me
 surfaced:
 
 ```bash
-$ athenacore recall "water usage" --topic batteries --explain
+$ crucible recall "water usage" --topic batteries --explain
 
 research · research · 2026-07-24 09:12
   score=0.812 (kw=1.00 sem=0.74 rec=0.61 sal=0.60)
@@ -189,21 +189,21 @@ the same context is the easiest way to get seven bland restatements.
 ## CLI
 
 ```bash
-athenacore run "question" --topic t [--preset red-team] [--model ollama:llama3.1]
-athenacore debate "question" --topic t --rounds 4    # stops early on convergence
-athenacore recall "query" --topic t --explain        # inspect retrieval ranking
-athenacore timeline --topic t [--all]                # full audit trail
-athenacore runs | topics | stats                     # what happened, what it cost
-athenacore export --topic t --format md -o report.md
-athenacore graph red-team --format mermaid           # render any workflow
-athenacore agents | presets | doctor | reindex
-athenacore serve | ui
+crucible run "question" --topic t [--preset red-team] [--model ollama:llama3.1]
+crucible debate "question" --topic t --rounds 4    # stops early on convergence
+crucible recall "query" --topic t --explain        # inspect retrieval ranking
+crucible timeline --topic t [--all]                # full audit trail
+crucible runs | topics | stats                     # what happened, what it cost
+crucible export --topic t --format md -o report.md
+crucible graph red-team --format mermaid           # render any workflow
+crucible agents | presets | doctor | reindex
+crucible serve | ui
 ```
 
 Every command accepts `--json`, so the whole thing is scriptable:
 
 ```bash
-athenacore run "..." --topic t --json | jq -r '.results.synthesizer.content'
+crucible run "..." --topic t --json | jq -r '.results.synthesizer.content'
 ```
 
 ---
@@ -211,10 +211,10 @@ athenacore run "..." --topic t --json | jq -r '.results.synthesizer.content'
 ## Python API
 
 ```python
-from athenacore import Orchestrator, Settings, SqliteMemoryStore, build_preset
+from crucible import Orchestrator, Settings, SqliteMemoryStore, build_preset
 
 settings = Settings.from_env(model="ollama:llama3.1")
-store = SqliteMemoryStore("data/athenacore.sqlite3")
+store = SqliteMemoryStore("data/crucible.sqlite3")
 orchestrator = Orchestrator(store, settings=settings)
 
 report = orchestrator.run(
@@ -231,7 +231,7 @@ print(report.results["critic_assumptions"].content)
 **Build your own workflow:**
 
 ```python
-from athenacore import AgentGraph
+from crucible import AgentGraph
 
 graph = (
     AgentGraph(name="my-review")
@@ -246,8 +246,8 @@ report = orchestrator.run(graph, topic="t", query="...")
 **Add your own agent** - a role, a recall policy and a prompt:
 
 ```python
-from athenacore.agents import Agent, RecallPolicy, register_agent
-from athenacore.memory import EntryKind
+from crucible.agents import Agent, RecallPolicy, register_agent
+from crucible.memory import EntryKind
 
 
 @register_agent
@@ -268,7 +268,7 @@ class EconomistAgent(Agent):
 ```
 
 It is now available to the CLI, API and UI. Third-party packages can ship agents
-through the `athenacore.agents` entry-point group with no changes here.
+through the `crucible.agents` entry-point group with no changes here.
 
 **Subscribe to run events** (this is what drives the CLI trace, the SSE stream and
 the live UI):
@@ -281,13 +281,13 @@ orchestrator.bus.subscribe(lambda e: print(e.type.value, e.node, e.message))
 
 ## Models
 
-Set `ATHENA_MODEL` to `provider:model`:
+Set `CRUCIBLE_MODEL` to `provider:model`:
 
 | Provider | Example | Notes |
 |---|---|---|
 | `ollama` | `ollama:llama3.1` | **Default.** Local, free, private |
-| `openai` | `openai:gpt-4o-mini` | Needs `ATHENA_OPENAI_API_KEY` |
-| `anthropic` | `anthropic:claude-sonnet-4-5` | Needs `ATHENA_ANTHROPIC_API_KEY` |
+| `openai` | `openai:gpt-4o-mini` | Needs `CRUCIBLE_OPENAI_API_KEY` |
+| `anthropic` | `anthropic:claude-sonnet-4-5` | Needs `CRUCIBLE_ANTHROPIC_API_KEY` |
 | `groq`, `together`, `deepseek`, `openrouter`, `mistral`, `fireworks` | `groq:llama-3.3-70b` | OpenAI-compatible; base URLs preconfigured |
 | `lmstudio`, `vllm`, `llamacpp` | `vllm:my-model` | Local OpenAI-compatible servers |
 | `echo` | `echo:test` | Deterministic, offline - for tests and demos |
@@ -303,14 +303,14 @@ knowing:
 
 | Variable | Default | What it does |
 |---|---|---|
-| `ATHENA_MODEL` | `ollama:llama3.1` | Provider and model |
-| `ATHENA_CONTEXT_TOKEN_BUDGET` | `6000` | Max tokens of memory injected per prompt |
-| `ATHENA_COMPACTION_THRESHOLD_TOKENS` | `12000` | When a topic gets compacted |
-| `ATHENA_RECALL_W_KEYWORD` / `_SEMANTIC` / `_RECENCY` / `_SALIENCE` | `1.0` / `1.0` / `0.6` / `0.4` | Retrieval signal weights |
-| `ATHENA_RECALL_MMR_LAMBDA` | `0.7` | 1.0 = pure relevance, 0.0 = pure diversity |
-| `ATHENA_DEBATE_CONVERGENCE` | `0.92` | Similarity at which a debate stops early |
-| `ATHENA_MAX_PARALLEL_AGENTS` | `4` | Thread pool size |
-| `ATHENA_WEB_SEARCH_ENABLED` | `false` | Network egress is opt-in |
+| `CRUCIBLE_MODEL` | `ollama:llama3.1` | Provider and model |
+| `CRUCIBLE_CONTEXT_TOKEN_BUDGET` | `6000` | Max tokens of memory injected per prompt |
+| `CRUCIBLE_COMPACTION_THRESHOLD_TOKENS` | `12000` | When a topic gets compacted |
+| `CRUCIBLE_RECALL_W_KEYWORD` / `_SEMANTIC` / `_RECENCY` / `_SALIENCE` | `1.0` / `1.0` / `0.6` / `0.4` | Retrieval signal weights |
+| `CRUCIBLE_RECALL_MMR_LAMBDA` | `0.7` | 1.0 = pure relevance, 0.0 = pure diversity |
+| `CRUCIBLE_DEBATE_CONVERGENCE` | `0.92` | Similarity at which a debate stops early |
+| `CRUCIBLE_MAX_PARALLEL_AGENTS` | `4` | Thread pool size |
+| `CRUCIBLE_WEB_SEARCH_ENABLED` | `false` | Network egress is opt-in |
 
 ---
 
@@ -343,7 +343,7 @@ A few decisions that are load-bearing, explained in full in
 ```bash
 pip install -e ".[dev,ui,api]"
 pytest                    # 176 tests, fully offline
-pytest --cov=athenacore
+pytest --cov=crucible
 ruff check . && mypy src
 ```
 

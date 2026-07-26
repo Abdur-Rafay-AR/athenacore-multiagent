@@ -6,13 +6,13 @@ from datetime import timedelta
 
 import pytest
 
-from athenacore.config import RetrievalSettings
-from athenacore.errors import TopicNotFound
-from athenacore.memory.compaction import MemoryCompactor
-from athenacore.memory.embeddings import cosine
-from athenacore.memory.models import Entry, EntryKind, Usage, estimate_tokens, utcnow
-from athenacore.memory.retrieval import MemoryRetriever
-from athenacore.memory.store import EntryFilter
+from crucible.config import RetrievalSettings
+from crucible.errors import TopicNotFound
+from crucible.memory.compaction import MemoryCompactor
+from crucible.memory.embeddings import cosine
+from crucible.memory.models import Entry, EntryKind, Usage, estimate_tokens, utcnow
+from crucible.memory.retrieval import MemoryRetriever
+from crucible.memory.store import EntryFilter
 
 # -- store conformance (runs against every implementation) -------------------
 
@@ -98,7 +98,7 @@ class TestStoreConformance:
 
 class TestSqliteStore:
     def test_persists_across_connections(self, tmp_path):
-        from athenacore.memory.sqlite_store import SqliteMemoryStore
+        from crucible.memory.sqlite_store import SqliteMemoryStore
 
         path = tmp_path / "persist.sqlite3"
         first = SqliteMemoryStore(path)

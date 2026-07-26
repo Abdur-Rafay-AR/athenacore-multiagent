@@ -6,22 +6,22 @@ import json
 
 import pytest
 
-from athenacore.agents.base import AgentContext
-from athenacore.agents.registry import AgentFactory, available_agents, get_agent_class
-from athenacore.config import Settings, load_dotenv, split_model_spec
-from athenacore.errors import ConfigurationError, GraphError, ProviderError
-from athenacore.llm.base import Message, estimate_cost
-from athenacore.llm.providers import EchoProvider
-from athenacore.llm.registry import available_providers, build_provider
-from athenacore.memory.models import EntryKind
-from athenacore.memory.store import EntryFilter
-from athenacore.orchestration.debate import DebateOrchestrator
-from athenacore.orchestration.events import CancellationToken, EventBus, EventQueue, EventType
-from athenacore.orchestration.graph import AgentGraph, GraphNode
-from athenacore.orchestration.orchestrator import Orchestrator
-from athenacore.orchestration.presets import PRESETS, build_preset
-from athenacore.tools.base import ToolRegistry, parse_tool_calls, strip_tool_calls
-from athenacore.tools.builtin import CalculatorTool, ClockTool, MemorySearchTool
+from crucible.agents.base import AgentContext
+from crucible.agents.registry import AgentFactory, available_agents, get_agent_class
+from crucible.config import Settings, load_dotenv, split_model_spec
+from crucible.errors import ConfigurationError, GraphError, ProviderError
+from crucible.llm.base import Message, estimate_cost
+from crucible.llm.providers import EchoProvider
+from crucible.llm.registry import available_providers, build_provider
+from crucible.memory.models import EntryKind
+from crucible.memory.store import EntryFilter
+from crucible.orchestration.debate import DebateOrchestrator
+from crucible.orchestration.events import CancellationToken, EventBus, EventQueue, EventType
+from crucible.orchestration.graph import AgentGraph, GraphNode
+from crucible.orchestration.orchestrator import Orchestrator
+from crucible.orchestration.presets import PRESETS, build_preset
+from crucible.tools.base import ToolRegistry, parse_tool_calls, strip_tool_calls
+from crucible.tools.builtin import CalculatorTool, ClockTool, MemorySearchTool
 
 # -- config ------------------------------------------------------------------
 
@@ -51,16 +51,16 @@ class TestConfig:
         assert isinstance(settings.model, str)
 
     def test_env_overrides(self, monkeypatch):
-        monkeypatch.setenv("ATHENA_MODEL", "openai:gpt-4o-mini")
-        monkeypatch.setenv("ATHENA_TEMPERATURE", "0.9")
-        monkeypatch.setenv("ATHENA_RECALL_MAX_ENTRIES", "3")
+        monkeypatch.setenv("CRUCIBLE_MODEL", "openai:gpt-4o-mini")
+        monkeypatch.setenv("CRUCIBLE_TEMPERATURE", "0.9")
+        monkeypatch.setenv("CRUCIBLE_RECALL_MAX_ENTRIES", "3")
         settings = Settings.from_env(dotenv=None)
         assert settings.model == "openai:gpt-4o-mini"
         assert settings.temperature == 0.9
         assert settings.retrieval.max_entries == 3
 
     def test_invalid_env_is_reported(self, monkeypatch):
-        monkeypatch.setenv("ATHENA_MAX_OUTPUT_TOKENS", "not-a-number")
+        monkeypatch.setenv("CRUCIBLE_MAX_OUTPUT_TOKENS", "not-a-number")
         with pytest.raises(ConfigurationError):
             Settings.from_env(dotenv=None)
 
@@ -82,13 +82,13 @@ class TestConfig:
     def test_dotenv_parsing(self, tmp_path, monkeypatch):
         env = tmp_path / ".env"
         env.write_text(
-            '# comment\nexport ATHENA_MODEL="echo:test"\nATHENA_TEMPERATURE=0.1\nbroken line\n',
+            '# comment\nexport CRUCIBLE_MODEL="echo:test"\nCRUCIBLE_TEMPERATURE=0.1\nbroken line\n',
             encoding="utf-8",
         )
-        monkeypatch.delenv("ATHENA_MODEL", raising=False)
+        monkeypatch.delenv("CRUCIBLE_MODEL", raising=False)
         parsed = load_dotenv(env, override=True)
-        assert parsed["ATHENA_MODEL"] == "echo:test"
-        assert parsed["ATHENA_TEMPERATURE"] == "0.1"
+        assert parsed["CRUCIBLE_MODEL"] == "echo:test"
+        assert parsed["CRUCIBLE_TEMPERATURE"] == "0.1"
 
 
 # -- providers ---------------------------------------------------------------
@@ -185,7 +185,7 @@ class TestTools:
         ],
     )
     def test_calculator_refuses_unsafe_input(self, expression):
-        from athenacore.errors import ToolError
+        from crucible.errors import ToolError
 
         with pytest.raises(ToolError):
             CalculatorTool().run(expression=expression)
@@ -373,7 +373,7 @@ class TestEvents:
             assert events.empty
 
     def test_cancellation_token(self):
-        from athenacore.errors import RunCancelled
+        from crucible.errors import RunCancelled
 
         token = CancellationToken()
         token.raise_if_cancelled()

@@ -4,6 +4,24 @@ All notable changes to this project are documented here, following
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-07-26
+
+### Changed
+- **Renamed the project from AthenaCore to Crucible.** The former name belongs to
+  a company that owns the original version of this work, so it could not be
+  carried forward here.
+- The import name, CLI command and logging namespace are all now `crucible`. The
+  environment variable prefix is `CRUCIBLE_` (previously `ATHENA_`), and the
+  default database is `data/crucible.sqlite3`.
+- The distribution is published as `crucible-agents`, because `crucible` is
+  already taken on PyPI. `pip install crucible-agents`, `import crucible`.
+
+### Migration
+Rename your environment variables from `ATHENA_*` to `CRUCIBLE_*`, and either
+point `CRUCIBLE_DATABASE_PATH` at your existing file or rename it to
+`data/crucible.sqlite3`. The database schema is unchanged, so no data migration
+is needed.
+
 ## [0.2.0] - 2026-07-26
 
 A rewrite. The prototype was four agents sharing a flat TinyDB log; this is an
@@ -67,7 +85,7 @@ engine with a real retrieval system, a parallel orchestrator and three interface
 ### Changed
 - Storage moved from TinyDB to SQLite. The core engine now has **zero**
   dependencies; FastAPI and Streamlit are optional extras.
-- Installable package with an `athenacore` entry point, replacing loose scripts.
+- Installable package with a `crucible` entry point, replacing loose scripts.
 
 ### Removed
 - The prototype `agents/`, `orchestrator.py` and `frontend.py` modules, the

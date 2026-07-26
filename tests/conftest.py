@@ -8,13 +8,13 @@ from __future__ import annotations
 
 import pytest
 
-from athenacore.config import RetrievalSettings, Settings
-from athenacore.llm.providers import EchoProvider, ScriptedProvider
-from athenacore.memory.embeddings import HashingEmbedder
-from athenacore.memory.models import Entry, EntryKind
-from athenacore.memory.retrieval import MemoryRetriever
-from athenacore.memory.sqlite_store import SqliteMemoryStore
-from athenacore.memory.store import InMemoryMemoryStore
+from crucible.config import RetrievalSettings, Settings
+from crucible.llm.providers import EchoProvider, ScriptedProvider
+from crucible.memory.embeddings import HashingEmbedder
+from crucible.memory.models import Entry, EntryKind
+from crucible.memory.retrieval import MemoryRetriever
+from crucible.memory.sqlite_store import SqliteMemoryStore
+from crucible.memory.store import InMemoryMemoryStore
 
 
 @pytest.fixture

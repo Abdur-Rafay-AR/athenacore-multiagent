@@ -13,7 +13,7 @@ concurrency:
 env:
   # The whole suite runs against the deterministic offline provider, so CI
   # never needs a model, an API key or network egress.
-  ATHENA_MODEL: echo:test
+  CRUCIBLE_MODEL: echo:test
 
 jobs:
   test:
@@ -39,7 +39,7 @@ jobs:
           pip install -e ".[dev,api,ui]"
 
       - name: Test
-        run: pytest -q --cov=athenacore --cov-report=xml --cov-report=term-missing
+        run: pytest -q --cov=crucible --cov-report=xml --cov-report=term-missing
 
       - name: Upload coverage
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
@@ -84,11 +84,11 @@ jobs:
 
       - name: Import and run with nothing else installed
         run: |
-          python -c "import athenacore; print(athenacore.__version__)"
-          athenacore run "does this work with no dependencies?" \
+          python -c "import crucible; print(crucible.__version__)"
+          crucible run "does this work with no dependencies?" \
             --topic ci --preset brief --model echo:test --json > /dev/null
-          athenacore recall "work" --topic ci --explain
-          athenacore stats
+          crucible recall "work" --topic ci --explain
+          crucible stats
 
   build:
     runs-on: ubuntu-latest

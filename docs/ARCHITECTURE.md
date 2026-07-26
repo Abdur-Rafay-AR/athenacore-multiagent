@@ -1,6 +1,6 @@
 # Architecture
 
-This document explains how AthenaCore is put together and, more usefully, *why*.
+This document explains how Crucible is put together and, more usefully, *why*.
 Every design decision here was a trade; the reasoning matters more than the
 structure, because the reasoning is what tells you whether a change you want to
 make is safe.
@@ -26,8 +26,8 @@ make is safe.
 └──────────────────────────────────────────────────────────────┘
 ```
 
-Dependencies point strictly downward. The practical test: `athenacore.memory`
-imports nothing from `athenacore.agents`, and the interface layer contains no
+Dependencies point strictly downward. The practical test: `crucible.memory`
+imports nothing from `crucible.agents`, and the interface layer contains no
 logic you cannot also reach from Python. That is what makes the CLI, API and UI
 genuinely equivalent rather than three drifting implementations.
 
@@ -93,7 +93,7 @@ The pipeline is deliberately explicit rather than a single similarity call:
    never overflow the context window.
 
 Each result carries its per-signal breakdown all the way to the UI and
-`athenacore recall --explain`. An unexplainable ranker is one you cannot tune.
+`crucible recall --explain`. An unexplainable ranker is one you cannot tune.
 
 ### Embeddings without a dependency
 
@@ -255,7 +255,7 @@ that would make every similarity 1.0.
 | To add… | Do this |
 |---|---|
 | An agent | Subclass `Agent`, decorate with `@register_agent`. Available everywhere immediately. |
-| An agent from another package | Register under the `athenacore.agents` entry-point group. |
+| An agent from another package | Register under the `crucible.agents` entry-point group. |
 | A tool | Subclass `Tool`, add it to a `ToolRegistry`. |
 | A provider | Subclass `LLMProvider`, call `register_provider(name, factory)`. |
 | A storage backend | Implement `MemoryStore`; run the conformance suite against it. |
