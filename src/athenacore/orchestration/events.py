@@ -10,6 +10,7 @@ must never take down the run that is feeding it.
 
 from __future__ import annotations
 
+import contextlib
 import queue
 import threading
 from collections.abc import Callable, Iterator
@@ -179,10 +180,8 @@ class EventQueue:
         if not self._closed:
             self._closed = True
             self._unsubscribe()
-            try:
+            with contextlib.suppress(queue.Full):  # pragma: no cover
                 self._queue.put_nowait(None)
-            except queue.Full:  # pragma: no cover
-                pass
 
     def __enter__(self) -> EventQueue:
         return self

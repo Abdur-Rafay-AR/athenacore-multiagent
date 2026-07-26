@@ -96,7 +96,9 @@ def render_sidebar(settings: Settings) -> tuple[str, str]:
     choice = st.sidebar.selectbox("Topic", options, index=1 if names else 0)
 
     if choice == "+ New topic":
-        topic = st.sidebar.text_input("New topic name", placeholder="e.g. battery-supply-chain").strip()
+        topic = st.sidebar.text_input(
+            "New topic name", placeholder="e.g. battery-supply-chain"
+        ).strip()
     else:
         topic = choice
         record = next((t for t in topics if t.name == topic), None)
@@ -225,12 +227,16 @@ def view_console(settings: Settings, topic: str) -> None:
             preset_key = st.selectbox(
                 "Workflow",
                 [*PRESETS.keys(), *[f"solo:{a}" for a in available_agents()]],
-                format_func=lambda k: PRESETS[k].title if k in PRESETS else f"Single agent: {k[5:]}",
+                format_func=lambda k: (
+                    PRESETS[k].title if k in PRESETS else f"Single agent: {k[5:]}"
+                ),
             )
         with col_right:
             if preset_key in PRESETS:
                 preset = PRESETS[preset_key]
-                st.caption(f"**{preset.title}** — {preset.summary}  \nToken appetite: {preset.cost}")
+                st.caption(
+                    f"**{preset.title}** — {preset.summary}  \nToken appetite: {preset.cost}"
+                )
 
         query = st.text_area(
             "Question",
@@ -259,7 +265,9 @@ def view_console(settings: Settings, topic: str) -> None:
                 cached_stats.clear()
 
     else:
-        query = st.text_area("Debate question", height=100, placeholder="A question with two defensible sides.")
+        query = st.text_area(
+            "Debate question", height=100, placeholder="A question with two defensible sides."
+        )
         col_a, col_b, col_c = st.columns(3)
         with col_a:
             participants = st.multiselect(
@@ -276,7 +284,9 @@ def view_console(settings: Settings, topic: str) -> None:
         )
 
         can_run = bool(query.strip()) and len(participants) >= 2
-        if st.button("▶ Start debate", type="primary", use_container_width=True, disabled=not can_run):
+        if st.button(
+            "▶ Start debate", type="primary", use_container_width=True, disabled=not can_run
+        ):
             orchestrator = Orchestrator(store, settings=settings)
             debate = DebateOrchestrator(
                 orchestrator,
@@ -324,7 +334,8 @@ def render_report(report: Any) -> None:
         return
 
     tabs = st.tabs([*names, "Transcript"])
-    for tab, name in zip(tabs, names):
+    # Not strict: `tabs` has one extra entry for the Transcript tab, filled below.
+    for tab, name in zip(tabs, names, strict=False):
         result = report.results[name]
         with tab:
             st.markdown(result.content)
@@ -435,7 +446,9 @@ def view_memory(settings: Settings, topic: str) -> None:
     retriever = MemoryRetriever(
         store,
         settings=retrieval,
-        embedder=HashingEmbedder(dims=settings.embedding_dims) if settings.embeddings_enabled else None,
+        embedder=HashingEmbedder(dims=settings.embedding_dims)
+        if settings.embeddings_enabled
+        else None,
         token_budget=settings.context_token_budget,
     )
     result = retriever.recall(topic, query, max_entries=int(limit))
@@ -443,7 +456,8 @@ def view_memory(settings: Settings, topic: str) -> None:
     if not result:
         st.markdown(
             theme.empty_state(
-                "Nothing recalled yet.", "Run an agent on this topic to give it something to remember."
+                "Nothing recalled yet.",
+                "Run an agent on this topic to give it something to remember.",
             ),
             unsafe_allow_html=True,
         )
@@ -494,7 +508,9 @@ def view_timeline(settings: Settings, topic: str) -> None:
 
     c1, c2, c3 = st.columns([2, 2, 1])
     kinds = c1.multiselect("Kinds", [k.value for k in EntryKind], default=[])
-    agents = c2.multiselect("Agents", [a["name"] for a in describe_agents()] + ["user", "compactor"])
+    agents = c2.multiselect(
+        "Agents", [a["name"] for a in describe_agents()] + ["user", "compactor"]
+    )
     show_archived = c3.checkbox("Archived", value=True)
 
     entries = store.query_entries(

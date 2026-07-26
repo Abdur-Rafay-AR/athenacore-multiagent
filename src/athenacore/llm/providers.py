@@ -119,7 +119,9 @@ class OpenAICompatibleProvider(LLMProvider):
         self.base_url = base_url.rstrip("/")
 
     def connection_hint(self) -> str:
-        return f"Check ATHENA_OPENAI_BASE_URL (currently {self.base_url}) and ATHENA_OPENAI_API_KEY."
+        return (
+            f"Check ATHENA_OPENAI_BASE_URL (currently {self.base_url}) and ATHENA_OPENAI_API_KEY."
+        )
 
     def _headers(self) -> dict[str, str]:
         headers = {}
@@ -340,9 +342,15 @@ class EchoProvider(LLMProvider):
                 "- Missing: no base rate or comparison case is offered.",
             ]
         elif "summar" in lowered or "condens" in lowered or "compact" in lowered:
-            lines += [f"- {subject or 'The topic'} is the central thread.", "- Open questions remain."]
+            lines += [
+                f"- {subject or 'The topic'} is the central thread.",
+                "- Open questions remain.",
+            ]
         elif "insight" in lowered or "takeaway" in lowered:
-            lines += [f"- Leverage point: {subject or 'the topic'}.", "- Second-order effect noted."]
+            lines += [
+                f"- Leverage point: {subject or 'the topic'}.",
+                "- Second-order effect noted.",
+            ]
         else:
             lines += [f"- Finding on {subject or 'the topic'}.", "- Confidence: moderate."]
         return "\n".join(lines)
@@ -370,11 +378,66 @@ class ScriptedProvider(LLMProvider):
 
 _WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9'-]{3,}")
 _NOISE = frozenset(
-    """this that with from have been will your their about which would could should
-    prior memory entries agent agents topic content respond response answer question
-    following based please rules write plain none only more most also than then when
-    where what does using used into over under while very just they them there here
-    system user assistant tokens""".split()
+    [
+        "this",
+        "that",
+        "with",
+        "from",
+        "have",
+        "been",
+        "will",
+        "your",
+        "their",
+        "about",
+        "which",
+        "would",
+        "could",
+        "should",
+        "prior",
+        "memory",
+        "entries",
+        "agent",
+        "agents",
+        "topic",
+        "content",
+        "respond",
+        "response",
+        "answer",
+        "question",
+        "following",
+        "based",
+        "please",
+        "rules",
+        "write",
+        "plain",
+        "none",
+        "only",
+        "more",
+        "most",
+        "also",
+        "than",
+        "then",
+        "when",
+        "where",
+        "what",
+        "does",
+        "using",
+        "used",
+        "into",
+        "over",
+        "under",
+        "while",
+        "very",
+        "just",
+        "they",
+        "them",
+        "there",
+        "here",
+        "system",
+        "user",
+        "assistant",
+        "tokens",
+    ]
 )
 
 

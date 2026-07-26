@@ -140,7 +140,9 @@ CSS = """
 """
 
 
-def entry_card(entry: dict[str, Any], *, signals: dict[str, float] | None = None, score: float | None = None) -> str:
+def entry_card(
+    entry: dict[str, Any], *, signals: dict[str, float] | None = None, score: float | None = None
+) -> str:
     """Render one memory entry as HTML."""
     kind = entry.get("kind", "note")
     colour = kind_colour(kind)
@@ -159,8 +161,7 @@ def entry_card(entry: dict[str, Any], *, signals: dict[str, float] | None = None
     signal_html = ""
     if signals:
         chips = "".join(
-            f'<span class="ac-signal">{name} {value:.2f}</span>'
-            for name, value in signals.items()
+            f'<span class="ac-signal">{name} {value:.2f}</span>' for name, value in signals.items()
         )
         signal_html = f'<div class="ac-signals">{chips}</div>'
 
@@ -256,5 +257,9 @@ def activity_chart(activity: list[tuple[str, int]], *, height: int = 90) -> str:
 
 
 def empty_state(message: str, hint: str = "") -> str:
-    hint_html = f'<div style="font-size:0.85rem;margin-top:0.4rem">{html.escape(hint)}</div>' if hint else ""
+    hint_html = (
+        f'<div style="font-size:0.85rem;margin-top:0.4rem">{html.escape(hint)}</div>'
+        if hint
+        else ""
+    )
     return f'<div class="ac-empty"><div>{html.escape(message)}</div>{hint_html}</div>'

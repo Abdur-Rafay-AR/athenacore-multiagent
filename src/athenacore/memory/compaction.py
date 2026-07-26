@@ -242,16 +242,12 @@ class MemoryCompactor:
         ctx = lock if lock is not None else _NullContext()
         with ctx:
             cur = conn.cursor()
-            cur.execute(
-                "SELECT topic, tokens FROM entries WHERE id=? AND archived=1", (entry_id,)
-            )
+            cur.execute("SELECT topic, tokens FROM entries WHERE id=? AND archived=1", (entry_id,))
             row = cur.fetchone()
             if row is None:
                 cur.close()
                 return 0
-            cur.execute(
-                "UPDATE entries SET archived=0, superseded_by=NULL WHERE id=?", (entry_id,)
-            )
+            cur.execute("UPDATE entries SET archived=0, superseded_by=NULL WHERE id=?", (entry_id,))
             cur.execute(
                 "UPDATE topics SET live_tokens = live_tokens + ? WHERE name = ?",
                 (int(row["tokens"]), row["topic"]),

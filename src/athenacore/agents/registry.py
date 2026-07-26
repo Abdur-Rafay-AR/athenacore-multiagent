@@ -36,7 +36,9 @@ def register_agent(cls: A) -> A:
     if not name or name == "agent":
         raise ConfigurationError(f"{cls.__name__} must define a unique class-level `name`")
     if name in _REGISTRY and _REGISTRY[name] is not cls:
-        raise ConfigurationError(f"agent name {name!r} is already registered by {_REGISTRY[name].__name__}")
+        raise ConfigurationError(
+            f"agent name {name!r} is already registered by {_REGISTRY[name].__name__}"
+        )
     _REGISTRY[name] = cls
     return cls
 
@@ -54,7 +56,9 @@ def _load_plugins() -> None:
             try:
                 loaded = entry.load()
             except Exception as exc:  # a broken plugin must not break startup
-                log.warning("agent plugin failed to load", extra={"plugin": entry.name, "error": str(exc)})
+                log.warning(
+                    "agent plugin failed to load", extra={"plugin": entry.name, "error": str(exc)}
+                )
                 continue
             if isinstance(loaded, type) and getattr(loaded, "name", None):
                 _REGISTRY.setdefault(loaded.name.lower(), loaded)
@@ -98,8 +102,10 @@ def describe_agents() -> list[dict[str, Any]]:
             {
                 "name": name,
                 "role": getattr(cls, "role", ""),
-                "description": (getattr(cls, "description", "") or (cls.__doc__ or "").strip().split("\n")[0]),
-                "kind": getattr(cls, "entry_kind").value,
+                "description": (
+                    getattr(cls, "description", "") or (cls.__doc__ or "").strip().split("\n")[0]
+                ),
+                "kind": cls.entry_kind.value,
                 "temperature": getattr(cls, "temperature", None),
                 "uses_tools": getattr(cls, "uses_tools", True),
             }

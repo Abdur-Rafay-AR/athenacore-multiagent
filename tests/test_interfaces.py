@@ -163,9 +163,7 @@ class TestAPI:
         assert any(p["key"] == "brief" for p in client.get("/presets").json())
 
     def test_run_creates_memory(self, client):
-        response = client.post(
-            "/runs", json={"topic": "t", "query": "Why?", "preset": "brief"}
-        )
+        response = client.post("/runs", json={"topic": "t", "query": "Why?", "preset": "brief"})
         assert response.status_code == 200
         body = response.json()
         assert body["run"]["status"] == "succeeded"

@@ -21,10 +21,10 @@ Design commitments worth knowing about:
 from __future__ import annotations
 
 import time
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from athenacore.agents.base import AgentContext, AgentResult
 from athenacore.agents.registry import AgentFactory
@@ -414,7 +414,10 @@ class Orchestrator:
         try:
             return bool(predicate(report))
         except Exception as exc:
-            log.warning("condition raised, running node anyway", extra={"condition": name, "error": str(exc)})
+            log.warning(
+                "condition raised, running node anyway",
+                extra={"condition": name, "error": str(exc)},
+            )
             return True
 
     # -- collaborators -------------------------------------------------------

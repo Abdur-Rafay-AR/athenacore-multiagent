@@ -54,17 +54,17 @@ class EntryKind(str, Enum):
     (:attr:`SUMMARY` and :attr:`DECISION` are protected).
     """
 
-    NOTE = "note"           # human-authored context
-    QUESTION = "question"   # the prompt that started a run
-    RESEARCH = "research"   # sourced findings
-    SUMMARY = "summary"     # condensed prior state (protected from compaction)
-    CRITIQUE = "critique"   # counterarguments, risks, holes
-    INSIGHT = "insight"     # strategic takeaway
-    SYNTHESIS = "synthesis" # reconciliation of conflicting views
-    PLAN = "plan"           # proposed next steps
-    DECISION = "decision"   # a conclusion worth protecting (protected)
-    TOOL = "tool"           # raw tool output
-    ERROR = "error"         # a failure worth remembering
+    NOTE = "note"  # human-authored context
+    QUESTION = "question"  # the prompt that started a run
+    RESEARCH = "research"  # sourced findings
+    SUMMARY = "summary"  # condensed prior state (protected from compaction)
+    CRITIQUE = "critique"  # counterarguments, risks, holes
+    INSIGHT = "insight"  # strategic takeaway
+    SYNTHESIS = "synthesis"  # reconciliation of conflicting views
+    PLAN = "plan"  # proposed next steps
+    DECISION = "decision"  # a conclusion worth protecting (protected)
+    TOOL = "tool"  # raw tool output
+    ERROR = "error"  # a failure worth remembering
 
     @property
     def protected(self) -> bool:
@@ -95,7 +95,7 @@ class RunStatus(str, Enum):
     PENDING = "pending"
     RUNNING = "running"
     SUCCEEDED = "succeeded"
-    PARTIAL = "partial"    # some nodes failed but the run produced output
+    PARTIAL = "partial"  # some nodes failed but the run produced output
     FAILED = "failed"
     CANCELLED = "cancelled"
 

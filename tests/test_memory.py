@@ -9,11 +9,10 @@ import pytest
 from athenacore.config import RetrievalSettings
 from athenacore.errors import TopicNotFound
 from athenacore.memory.compaction import MemoryCompactor
-from athenacore.memory.embeddings import HashingEmbedder, cosine
+from athenacore.memory.embeddings import cosine
 from athenacore.memory.models import Entry, EntryKind, Usage, estimate_tokens, utcnow
 from athenacore.memory.retrieval import MemoryRetriever
 from athenacore.memory.store import EntryFilter
-
 
 # -- store conformance (runs against every implementation) -------------------
 
@@ -61,7 +60,9 @@ class TestStoreConformance:
 
     def test_keyword_search_ranks_matches_first(self, any_store):
         any_store.add_entry(Entry(topic="t", agent="a", content="lithium brine water extraction"))
-        any_store.add_entry(Entry(topic="t", agent="b", content="unrelated commentary about bicycles"))
+        any_store.add_entry(
+            Entry(topic="t", agent="b", content="unrelated commentary about bicycles")
+        )
         hits = any_store.keyword_search("lithium water", topic="t")
         assert hits, "expected at least one match"
         assert "lithium" in hits[0][0].content
@@ -118,7 +119,7 @@ class TestSqliteStore:
     def test_search_survives_punctuation(self, store):
         """User input goes straight into FTS5 MATCH, which raises on bad syntax."""
         store.add_entry(Entry(topic="t", agent="a", content="cost is 40% (high) per unit"))
-        for query in ['40% (high)', '"unbalanced', "a AND OR b", "***", "NEAR("]:
+        for query in ["40% (high)", '"unbalanced', "a AND OR b", "***", "NEAR("]:
             store.keyword_search(query, topic="t")  # must not raise
 
     def test_rename_topic_moves_entries(self, store):
@@ -249,7 +250,11 @@ class TestRetrieval:
         for agent in "abcd":
             store.add_entry(Entry(topic="t", agent=agent, content=duplicate))
         store.add_entry(
-            Entry(topic="t", agent="e", content="Water consumption in Atacama brine ponds is contested.")
+            Entry(
+                topic="t",
+                agent="e",
+                content="Water consumption in Atacama brine ponds is contested.",
+            )
         )
 
         diverse = MemoryRetriever(

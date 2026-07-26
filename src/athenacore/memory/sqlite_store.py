@@ -137,7 +137,7 @@ CREATE TRIGGER IF NOT EXISTS entries_au AFTER UPDATE OF content ON entries BEGIN
 END;
 """
 
-_FTS_SPECIALS = str.maketrans({c: " " for c in '"()*:^-+'})
+_FTS_SPECIALS = str.maketrans(dict.fromkeys('"()*:^-+', " "))
 
 
 def _fts_query(text: str) -> str:
@@ -339,7 +339,9 @@ class SqliteMemoryStore(MemoryStore):
             # orphans the children mid-statement. Deferring the check to COMMIT
             # lets both sides move within one transaction.
             cur.execute("PRAGMA defer_foreign_keys = ON")
-            cur.execute("UPDATE topics SET name=?, updated_at=? WHERE name=?", (new, to_iso(utcnow()), old))
+            cur.execute(
+                "UPDATE topics SET name=?, updated_at=? WHERE name=?", (new, to_iso(utcnow()), old)
+            )
             cur.execute("UPDATE entries SET topic=? WHERE topic=?", (new, old))
             cur.execute("UPDATE runs SET topic=? WHERE topic=?", (new, old))
         return self.require_topic(new)
@@ -453,7 +455,10 @@ class SqliteMemoryStore(MemoryStore):
             # to [0, 1] against the best hit so weights stay comparable.
             relevances = [-float(r["rank"]) for r in rows]
             best = max(relevances) or 1.0
-            return [(_row_to_entry(r), max(0.0, rel / best)) for r, rel in zip(rows, relevances)]
+            return [
+                (_row_to_entry(r), max(0.0, rel / best))
+                for r, rel in zip(rows, relevances, strict=True)
+            ]
         return self._like_search(query, topic=topic, limit=limit)
 
     def _like_search(
@@ -647,9 +652,7 @@ class SqliteMemoryStore(MemoryStore):
                 ).fetchall()
             }
             topics = cur.execute("SELECT COUNT(*) FROM topics").fetchone()[0]
-            run_rows = cur.execute(
-                f"SELECT usage FROM runs{scope}", params
-            ).fetchall()
+            run_rows = cur.execute(f"SELECT usage FROM runs{scope}", params).fetchall()
 
         usage = Usage()
         for row in run_rows:

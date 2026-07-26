@@ -147,10 +147,7 @@ class RetrievalSettings:
         if self.recency_half_life_hours <= 0:
             raise ConfigurationError("retrieval.recency_half_life_hours must be > 0")
         total = (
-            self.keyword_weight
-            + self.semantic_weight
-            + self.recency_weight
-            + self.salience_weight
+            self.keyword_weight + self.semantic_weight + self.recency_weight + self.salience_weight
         )
         if total <= 0:
             raise ConfigurationError("at least one retrieval weight must be positive")
@@ -246,7 +243,9 @@ class Settings:
     # -- construction --------------------------------------------------------
 
     @classmethod
-    def from_env(cls, *, dotenv: str | os.PathLike[str] | None = ".env", **overrides: Any) -> Settings:
+    def from_env(
+        cls, *, dotenv: str | os.PathLike[str] | None = ".env", **overrides: Any
+    ) -> Settings:
         """Build settings from ``.env`` + environment, then apply ``overrides``.
 
         Unknown override keys raise :class:`ConfigurationError` rather than being

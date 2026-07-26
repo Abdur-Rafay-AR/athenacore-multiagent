@@ -113,7 +113,9 @@ class AgentGraph:
         self.add(GraphNode(name=name, agent=agent or name, depends_on=tuple(depends), **kwargs))
         return self
 
-    def parallel(self, *names: str, depends_on: Sequence[str] | None = None, **kwargs: Any) -> AgentGraph:
+    def parallel(
+        self, *names: str, depends_on: Sequence[str] | None = None, **kwargs: Any
+    ) -> AgentGraph:
         """Add several independent nodes sharing the same dependencies."""
         deps = tuple(depends_on) if depends_on is not None else tuple(self.leaves())
         for name in names:
@@ -283,7 +285,9 @@ class AgentGraph:
         for name, state in states.items():
             if name in self._nodes and state in palette:
                 stroke, fill = palette[state].split(",")
-                lines.append(f"    style {_safe_id(name)} fill:{fill},stroke:{stroke},stroke-width:2px")
+                lines.append(
+                    f"    style {_safe_id(name)} fill:{fill},stroke:{stroke},stroke-width:2px"
+                )
         return "\n".join(lines)
 
     def to_ascii(self) -> str:

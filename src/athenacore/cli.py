@@ -169,7 +169,9 @@ def cmd_recall(args: argparse.Namespace) -> int:
 
     store = _open_store(settings)
     try:
-        embedder = HashingEmbedder(dims=settings.embedding_dims) if settings.embeddings_enabled else None
+        embedder = (
+            HashingEmbedder(dims=settings.embedding_dims) if settings.embeddings_enabled else None
+        )
         retriever = MemoryRetriever(
             store,
             settings=settings.retrieval,
@@ -183,7 +185,11 @@ def cmd_recall(args: argparse.Namespace) -> int:
         if not result:
             print("No matching memory.")
             return 0
-        print(_heading(f"\n{len(result)} entries · ~{result.tokens} tokens · from {result.candidates_considered} candidates\n"))
+        print(
+            _heading(
+                f"\n{len(result)} entries · ~{result.tokens} tokens · from {result.candidates_considered} candidates\n"
+            )
+        )
         for item in result.entries:
             entry = item.entry
             stamp = entry.created_at.strftime("%Y-%m-%d %H:%M")
@@ -205,7 +211,7 @@ def cmd_topics(args: argparse.Namespace) -> int:
             print(json.dumps([t.to_dict() for t in topics], indent=2, default=str))
             return 0
         if not topics:
-            print("No topics yet. Start one:  athenacore run \"your question\" --topic mytopic")
+            print('No topics yet. Start one:  athenacore run "your question" --topic mytopic')
             return 0
         print(_heading(f"\n{'TOPIC':<28} {'ENTRIES':>8} {'TOKENS':>9}  UPDATED"))
         for topic in topics:
@@ -252,7 +258,9 @@ def cmd_runs(args: argparse.Namespace) -> int:
         if not runs:
             print("No runs recorded yet.")
             return 0
-        print(_heading(f"\n{'STARTED':<17} {'TOPIC':<20} {'PRESET':<28} {'STATUS':<10} {'TOKENS':>8}"))
+        print(
+            _heading(f"\n{'STARTED':<17} {'TOPIC':<20} {'PRESET':<28} {'STATUS':<10} {'TOKENS':>8}")
+        )
         for run in runs:
             print(
                 f"{run.started_at.strftime('%Y-%m-%d %H:%M'):<17} {run.topic[:19]:<20} "
@@ -475,7 +483,9 @@ def cmd_doctor(args: argparse.Namespace) -> int:
             __import__(module)
             print(f"  {extra:<14} {_colour('installed', GREEN)}")
         except ImportError:
-            print(f"  {extra:<14} not installed {_colour(f'(pip install athenacore[{extra}]) for {purpose}', DIM)}")
+            print(
+                f"  {extra:<14} not installed {_colour(f'(pip install athenacore[{extra}]) for {purpose}', DIM)}"
+            )
 
     print()
     return 0 if ok else 1
@@ -492,7 +502,9 @@ def cmd_serve(args: argparse.Namespace) -> int:
 
     os.environ.setdefault("ATHENA_DATABASE_PATH", str(settings.database_path))
     print(_heading(f"\nAthenaCore API on http://{args.host}:{args.port}  (docs at /docs)\n"))
-    uvicorn.run(create_app(settings), host=args.host, port=args.port, log_level=settings.log_level.lower())
+    uvicorn.run(
+        create_app(settings), host=args.host, port=args.port, log_level=settings.log_level.lower()
+    )
     return 0
 
 
@@ -536,7 +548,7 @@ def build_parser() -> argparse.ArgumentParser:
             '  athenacore run "Is refining the real EV bottleneck?" --topic batteries\n'
             '  athenacore run "..." --topic batteries --preset red-team --model ollama:llama3.1\n'
             '  athenacore debate "Will sodium-ion displace lithium?" --topic batteries --rounds 4\n'
-            "  athenacore recall \"water usage\" --topic batteries --explain\n"
+            '  athenacore recall "water usage" --topic batteries --explain\n'
             "  athenacore export --topic batteries --format md -o report.md\n"
             "  athenacore doctor\n"
         ),
@@ -553,7 +565,9 @@ def build_parser() -> argparse.ArgumentParser:
     model_opts.add_argument("-t", "--temperature", type=float)
     model_opts.add_argument("--no-tools", action="store_true", help="disable tool calling")
     model_opts.add_argument("--web-search", action="store_true", help="enable the web search tool")
-    model_opts.add_argument("-v", "--verbose", action="store_true", help="show recall and token events")
+    model_opts.add_argument(
+        "-v", "--verbose", action="store_true", help="show recall and token events"
+    )
 
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -622,7 +636,9 @@ def build_parser() -> argparse.ArgumentParser:
     graph.add_argument("--format", choices=["ascii", "mermaid", "json"], default="ascii")
     graph.set_defaults(func=cmd_graph)
 
-    reindex = sub.add_parser("reindex", parents=[common], help="build embeddings for existing memory")
+    reindex = sub.add_parser(
+        "reindex", parents=[common], help="build embeddings for existing memory"
+    )
     reindex.add_argument("--topic")
     reindex.set_defaults(func=cmd_reindex)
 

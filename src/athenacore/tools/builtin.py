@@ -64,7 +64,9 @@ class CalculatorTool(Tool):
     """Arithmetic the model should not be trusted to do in its head."""
 
     name = "calculator"
-    description = "Evaluate an arithmetic expression (+ - * / // % **, sqrt, log, min, max, round, pi, e)."
+    description = (
+        "Evaluate an arithmetic expression (+ - * / // % **, sqrt, log, min, max, round, pi, e)."
+    )
     parameters = {"expression": {"type": "string", "description": "e.g. '1.4e6 * 0.47 / 12'"}}
     required = ("expression",)
 
@@ -84,10 +86,7 @@ class CalculatorTool(Tool):
             raise ToolError("division by zero", tool=self.name) from exc
         except (ValueError, OverflowError, TypeError) as exc:
             raise ToolError(f"cannot evaluate: {exc}", tool=self.name) from exc
-        if isinstance(value, float):
-            rendered = f"{value:.10g}"
-        else:
-            rendered = str(value)
+        rendered = f"{value:.10g}" if isinstance(value, float) else str(value)
         return f"{expression} = {rendered}"
 
     def _eval(self, node: ast.AST) -> Any:
@@ -135,7 +134,9 @@ class MemorySearchTool(Tool):
     """
 
     name = "memory_search"
-    description = "Search the team's persistent memory for prior findings. Returns matching entries."
+    description = (
+        "Search the team's persistent memory for prior findings. Returns matching entries."
+    )
     parameters = {
         "query": {"type": "string", "description": "what to look for"},
         "topic": {"type": "string", "description": "optional topic to restrict to"},

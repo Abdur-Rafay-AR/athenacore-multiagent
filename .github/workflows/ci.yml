@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The whole suite runs against the deterministic offline provider, so CI
+  # never needs a model, an API key or network egress.
+  ATHENA_MODEL: echo:test
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,api,ui]"
+
+      - name: Test
+        run: pytest -q --cov=athenacore --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -e ".[dev]"
+
+      - name: Ruff
+        run: ruff check . --output-format=github
+
+      - name: Format check
+        run: ruff format --check .
+
+      # Advisory for now: the codebase is annotated throughout but not yet
+      # strict-clean, and a red badge for gradual typing helps nobody. Tighten
+      # the mypy settings first, then drop continue-on-error.
+      - name: Types
+        run: mypy src
+        continue-on-error: true
+
+  no-dependency-core:
+    name: core imports with no dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The zero-dependency claim is a real guarantee, so it gets a real test:
+      # install without any extras and drive a full run through the CLI.
+      - name: Install core only
+        run: pip install -e .
+
+      - name: Import and run with nothing else installed
+        run: |
+          python -c "import athenacore; print(athenacore.__version__)"
+          athenacore run "does this work with no dependencies?" \
+            --topic ci --preset brief --model echo:test --json > /dev/null
+          athenacore recall "work" --topic ci --explain
+          athenacore stats
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install build twine
+      - run: python -m build
+      - run: twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/

@@ -23,7 +23,6 @@ from athenacore.orchestration.presets import PRESETS, build_preset
 from athenacore.tools.base import ToolRegistry, parse_tool_calls, strip_tool_calls
 from athenacore.tools.builtin import CalculatorTool, ClockTool, MemorySearchTool
 
-
 # -- config ------------------------------------------------------------------
 
 
@@ -178,8 +177,8 @@ class TestTools:
         "expression",
         [
             "__import__('os').system('echo hi')",  # code execution
-            "open('/etc/passwd').read()",          # file access
-            "9 ** 9 ** 9",                          # resource exhaustion
+            "open('/etc/passwd').read()",  # file access
+            "9 ** 9 ** 9",  # resource exhaustion
             "1 / 0",
             "undefined_name + 1",
             "[1, 2, 3]",
@@ -205,9 +204,9 @@ class TestTools:
     @pytest.mark.parametrize(
         "line",
         [
-            "TOOL: calculator {'expression': '2+2'}",       # single quotes
-            'TOOL: calculator {"expression": "2+2",}',      # trailing comma
-            'TOOL:calculator{"expression": "2+2"}',         # no spaces
+            "TOOL: calculator {'expression': '2+2'}",  # single quotes
+            'TOOL: calculator {"expression": "2+2",}',  # trailing comma
+            'TOOL:calculator{"expression": "2+2"}',  # no spaces
         ],
     )
     def test_parse_tolerates_sloppy_syntax(self, line):
@@ -389,7 +388,15 @@ class TestEvents:
 
 class TestAgents:
     def test_all_builtin_agents_are_registered(self):
-        for name in ["research", "critic", "insight", "summarizer", "synthesizer", "planner", "factcheck"]:
+        for name in [
+            "research",
+            "critic",
+            "insight",
+            "summarizer",
+            "synthesizer",
+            "planner",
+            "factcheck",
+        ]:
             assert name in available_agents()
 
     def test_unknown_agent_is_rejected(self):
@@ -444,7 +451,9 @@ class TestAgents:
             def _complete(self, messages, **options):
                 ToolUser.turn += 1
                 if ToolUser.turn == 1:
-                    return super()._complete([Message.user('TOOL: calculator {"expression": "6*7"}')])
+                    return super()._complete(
+                        [Message.user('TOOL: calculator {"expression": "6*7"}')]
+                    )
                 # The observation must have reached the model.
                 assert any("OBSERVATION" in m.content for m in messages)
                 return super()._complete([Message.user("final answer after tool use")])
@@ -481,9 +490,7 @@ class TestOrchestrator:
 
     def test_upstream_output_reaches_dependents(self, store, settings):
         orchestrator = Orchestrator(store, settings=settings)
-        report = orchestrator.run(
-            AgentGraph.linear("research", "critic"), topic="t", query="a question"
-        )
+        orchestrator.run(AgentGraph.linear("research", "critic"), topic="t", query="a question")
         critic_prompt = orchestrator.provider.calls[-1][-1].content
         assert "THIS ROUND" in critic_prompt
 
@@ -508,8 +515,8 @@ class TestOrchestrator:
         report = orchestrator.run(graph, topic="t", query="q")
 
         assert report.run.status.value == "partial"
-        assert "critic" in report.skipped              # downstream of the failure
-        assert report.results["independent"].ok        # unrelated branch survived
+        assert "critic" in report.skipped  # downstream of the failure
+        assert report.results["independent"].ok  # unrelated branch survived
 
     def test_optional_node_failure_does_not_skip_dependents(self, store, settings):
         class FailingCheck(EchoProvider):
@@ -573,7 +580,9 @@ class TestOrchestrator:
         graph = AgentGraph(
             [
                 GraphNode(name="research", agent="research"),
-                GraphNode(name="planner", agent="planner", depends_on=("research",), condition="never"),
+                GraphNode(
+                    name="planner", agent="planner", depends_on=("research",), condition="never"
+                ),
             ]
         )
         report = orchestrator.run(graph, topic="t", query="q")

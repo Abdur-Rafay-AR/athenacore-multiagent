@@ -26,7 +26,7 @@ from athenacore.logging_setup import get_logger
 from athenacore.memory.embeddings import Embedder, HashingEmbedder, cosine
 from athenacore.memory.models import Entry, EntryKind, Run, RunStatus, Usage, utcnow
 from athenacore.orchestration.events import CancellationToken, EventBus, EventType
-from athenacore.orchestration.orchestrator import Orchestrator, RunReport
+from athenacore.orchestration.orchestrator import Orchestrator
 
 log = get_logger(__name__)
 
@@ -149,7 +149,11 @@ class DebateOrchestrator:
             query=query,
             status=RunStatus.RUNNING,
             model=f"{self.orchestrator.provider.name}:{self.orchestrator.provider.model}",
-            metadata={"participants": self.participants, "judge": self.judge, "max_rounds": max_rounds},
+            metadata={
+                "participants": self.participants,
+                "judge": self.judge,
+                "max_rounds": max_rounds,
+            },
         )
         self.store.save_run(run)
         report = DebateReport(run=run)
@@ -262,7 +266,8 @@ class DebateOrchestrator:
                     EventType.NODE_FINISHED if result.ok else EventType.NODE_FAILED,
                     run_id=report.run.id,
                     node=name,
-                    message=result.error or f"round {index} done ({result.usage.total_tokens} tokens)",
+                    message=result.error
+                    or f"round {index} done ({result.usage.total_tokens} tokens)",
                     round=index,
                     content=result.content,
                 )
@@ -318,9 +323,7 @@ class DebateOrchestrator:
         self, report: DebateReport, factory: AgentFactory, topic: str, query: str
     ) -> AgentResult:
         judge = factory.get(self.judge or "synthesizer")
-        transcript = "\n\n".join(
-            f"[Round {r.index}] {r.text}" for r in report.rounds if r.text
-        )
+        transcript = "\n\n".join(f"[Round {r.index}] {r.text}" for r in report.rounds if r.text)
         ctx = AgentContext(
             topic=topic,
             task=(

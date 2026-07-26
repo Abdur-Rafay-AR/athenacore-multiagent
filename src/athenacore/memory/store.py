@@ -9,9 +9,10 @@ used by the test suite.
 from __future__ import annotations
 
 import abc
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Iterable, Sequence
+from typing import Any
 
 from athenacore.errors import TopicNotFound
 from athenacore.memory.models import Entry, EntryKind, Run, Topic, utcnow
@@ -44,9 +45,7 @@ class EntryFilter:
             return False
         if not self.include_archived and entry.archived:
             return False
-        if self.since is not None and entry.created_at < self.since:
-            return False
-        return True
+        return not (self.since is not None and entry.created_at < self.since)
 
 
 @dataclass(slots=True)
@@ -125,7 +124,9 @@ class MemoryStore(abc.ABC):
     def query_entries(self, spec: EntryFilter) -> list[Entry]: ...
 
     @abc.abstractmethod
-    def keyword_search(self, query: str, *, topic: str | None = None, limit: int = 50) -> list[tuple[Entry, float]]:
+    def keyword_search(
+        self, query: str, *, topic: str | None = None, limit: int = 50
+    ) -> list[tuple[Entry, float]]:
         """Full-text search. Returns ``(entry, relevance)`` with relevance in
         ``[0, 1]``, highest first. Implementations without a text index may fall
         back to substring matching."""
@@ -137,7 +138,9 @@ class MemoryStore(abc.ABC):
     @abc.abstractmethod
     def set_salience(self, entry_id: str, salience: float) -> None: ...
 
-    def timeline(self, topic: str, *, limit: int = 200, include_archived: bool = True) -> list[Entry]:
+    def timeline(
+        self, topic: str, *, limit: int = 200, include_archived: bool = True
+    ) -> list[Entry]:
         """Chronological history of a topic, oldest first — the audit view."""
         return self.query_entries(
             EntryFilter(
@@ -157,7 +160,9 @@ class MemoryStore(abc.ABC):
     def get_embeddings(self, entry_ids: Sequence[str]) -> dict[str, list[float]]: ...
 
     @abc.abstractmethod
-    def entries_missing_embeddings(self, *, topic: str | None = None, limit: int = 500) -> list[Entry]: ...
+    def entries_missing_embeddings(
+        self, *, topic: str | None = None, limit: int = 500
+    ) -> list[Entry]: ...
 
     # -- runs ----------------------------------------------------------------
 
@@ -177,8 +182,9 @@ class MemoryStore(abc.ABC):
     def stats(self, *, topic: str | None = None) -> dict[str, Any]:
         """Counts and usage totals for dashboards."""
 
-    def close(self) -> None:  # pragma: no cover - default no-op
+    def close(self) -> None:  # optional hook: not every store holds resources
         """Release resources. Safe to call more than once."""
+        return None
 
     def __enter__(self) -> MemoryStore:
         return self
@@ -220,7 +226,9 @@ class InMemoryMemoryStore(MemoryStore):
         items = list(self._topics.values())
         if search:
             needle = search.lower()
-            items = [t for t in items if needle in t.name.lower() or needle in t.description.lower()]
+            items = [
+                t for t in items if needle in t.name.lower() or needle in t.description.lower()
+            ]
         items.sort(key=lambda t: t.updated_at, reverse=True)
         return items[:limit]
 

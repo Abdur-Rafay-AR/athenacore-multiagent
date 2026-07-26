@@ -24,6 +24,7 @@ it is the *second* signal in a hybrid ranker whose first signal is already BM25.
 
 from __future__ import annotations
 
+import itertools
 import math
 import re
 from abc import ABC, abstractmethod
@@ -35,13 +36,111 @@ _WORD_RE = re.compile(r"[a-z0-9']+")
 # Extremely common words carry almost no retrieval signal and would otherwise
 # dominate the character n-gram features.
 _STOPWORDS = frozenset(
-    """a an the and or but if then than that this these those of to in on for with
-    as at by from is are was were be been being it its it's do does did done have
-    has had not no nor so such very can will would should could may might must
-    i you he she they we me him her them us our your their what which who whom
-    when where why how all any both each few more most other some only own same
-    too s t just don now about into over under again further once here there"""
-    .split()
+    [
+        "a",
+        "an",
+        "the",
+        "and",
+        "or",
+        "but",
+        "if",
+        "then",
+        "than",
+        "that",
+        "this",
+        "these",
+        "those",
+        "of",
+        "to",
+        "in",
+        "on",
+        "for",
+        "with",
+        "as",
+        "at",
+        "by",
+        "from",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "it",
+        "its",
+        "it's",
+        "do",
+        "does",
+        "did",
+        "done",
+        "have",
+        "has",
+        "had",
+        "not",
+        "no",
+        "nor",
+        "so",
+        "such",
+        "very",
+        "can",
+        "will",
+        "would",
+        "should",
+        "could",
+        "may",
+        "might",
+        "must",
+        "i",
+        "you",
+        "he",
+        "she",
+        "they",
+        "we",
+        "me",
+        "him",
+        "her",
+        "them",
+        "us",
+        "our",
+        "your",
+        "their",
+        "what",
+        "which",
+        "who",
+        "whom",
+        "when",
+        "where",
+        "why",
+        "how",
+        "all",
+        "any",
+        "both",
+        "each",
+        "few",
+        "more",
+        "most",
+        "other",
+        "some",
+        "only",
+        "own",
+        "same",
+        "too",
+        "s",
+        "t",
+        "just",
+        "don",
+        "now",
+        "about",
+        "into",
+        "over",
+        "under",
+        "again",
+        "further",
+        "once",
+        "here",
+        "there",
+    ]
 )
 
 
@@ -95,7 +194,7 @@ class HashingEmbedder(Embedder):
                 padded = f"^{word}$"
                 for i in range(len(padded) - self.char_ngram + 1):
                     bump(f"c:{padded[i : i + self.char_ngram]}", 0.5)
-        for left, right in zip(content_words, content_words[1:]):
+        for left, right in itertools.pairwise(content_words):
             bump(f"b:{left}_{right}", 0.8)
         return counts
 
@@ -121,7 +220,13 @@ class CallableEmbedder(Embedder):
         embedder = CallableEmbedder(lambda ts: model.encode(list(ts)).tolist(), dims=384)
     """
 
-    def __init__(self, fn: Callable[[Sequence[str]], Sequence[Sequence[float]]], *, dims: int, name: str = "callable") -> None:
+    def __init__(
+        self,
+        fn: Callable[[Sequence[str]], Sequence[Sequence[float]]],
+        *,
+        dims: int,
+        name: str = "callable",
+    ) -> None:
         self.fn = fn
         self.dims = dims
         self._name = name

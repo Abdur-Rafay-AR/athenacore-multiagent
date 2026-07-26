@@ -110,7 +110,7 @@ class Tool(abc.ABC):
         args = ", ".join(
             f'"{key}": <{meta.get("type", "any")}>' for key, meta in self.parameters.items()
         )
-        return f'TOOL: {self.name} {{{args}}}  — {self.description}'
+        return f"TOOL: {self.name} {{{args}}}  — {self.description}"
 
     def validate(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """Check required keys and drop unknown ones.
@@ -120,9 +120,7 @@ class Tool(abc.ABC):
         """
         missing = [key for key in self.required if key not in arguments]
         if missing:
-            raise ToolError(
-                f"missing required argument(s): {', '.join(missing)}", tool=self.name
-            )
+            raise ToolError(f"missing required argument(s): {', '.join(missing)}", tool=self.name)
         if self.parameters:
             return {k: v for k, v in arguments.items() if k in self.parameters}
         return arguments

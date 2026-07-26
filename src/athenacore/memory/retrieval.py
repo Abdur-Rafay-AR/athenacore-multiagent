@@ -92,7 +92,7 @@ def _normalise(values: dict[str, float]) -> dict[str, float]:
         return {}
     lo, hi = min(values.values()), max(values.values())
     if math.isclose(hi, lo):
-        return {k: (1.0 if hi > 0 else 0.0) for k in values}
+        return dict.fromkeys(values, 1.0 if hi > 0 else 0.0)
     span = hi - lo
     return {k: (v - lo) / span for k, v in values.items()}
 
@@ -144,7 +144,9 @@ class MemoryRetriever:
         selected = self._diversify(scored, limit)
         return self._apply_budget(selected, query, topic, budget, len(candidates))
 
-    def recent(self, topic: str, *, limit: int = 10, kinds: Sequence[EntryKind] | None = None) -> list[Entry]:
+    def recent(
+        self, topic: str, *, limit: int = 10, kinds: Sequence[EntryKind] | None = None
+    ) -> list[Entry]:
         """Plain chronological recall — no scoring. Use when order is the point."""
         entries = self.store.query_entries(
             EntryFilter(
@@ -170,7 +172,7 @@ class MemoryRetriever:
         if not pending:
             return 0
         vectors = self.embedder.embed_many([e.content for e in pending])
-        for entry, vector in zip(pending, vectors):
+        for entry, vector in zip(pending, vectors, strict=True):
             self.store.set_embedding(entry.id, vector)
         return len(pending)
 
@@ -265,7 +267,12 @@ class MemoryRetriever:
             if total >= cfg.min_score:
                 results.append(
                     ScoredEntry(
-                        entry=entry, score=total, keyword=kw, semantic=sem, recency=rec, salience=sal
+                        entry=entry,
+                        score=total,
+                        keyword=kw,
+                        semantic=sem,
+                        recency=rec,
+                        salience=sal,
                     )
                 )
         results.sort(key=lambda s: s.score, reverse=True)
@@ -275,7 +282,7 @@ class MemoryRetriever:
         """Maximal Marginal Relevance selection.
 
         Greedily picks the candidate maximising
-        ``λ·relevance − (1−λ)·max_similarity_to_already_picked``. Without this,
+        ``lambda*relevance - (1-lambda)*max_similarity_to_already_picked``. Without this,
         recall returns five paraphrases of the same critique and wastes the budget.
         """
         cfg = self.settings
@@ -292,9 +299,7 @@ class MemoryRetriever:
                 penalty = 0.0
                 if picked:
                     penalty = max(
-                        similarity_to_unit(
-                            cosine(vectors[item.entry.id], vectors[chosen.entry.id])
-                        )
+                        similarity_to_unit(cosine(vectors[item.entry.id], vectors[chosen.entry.id]))
                         for chosen in picked
                     )
                 value = cfg.mmr_lambda * item.score - (1.0 - cfg.mmr_lambda) * penalty
@@ -310,9 +315,7 @@ class MemoryRetriever:
         if self.embedder is None:
             # No embedder: fall back to a bag-of-words proxy so MMR still removes
             # obvious duplicates rather than silently doing nothing.
-            return {
-                item.entry.id: _lexical_signature(item.entry.content) for item in scored
-            }
+            return {item.entry.id: _lexical_signature(item.entry.content) for item in scored}
         stored = self.store.get_embeddings(ids)
         out: dict[str, list[float]] = {}
         for item in scored:

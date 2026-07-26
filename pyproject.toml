@@ -83,7 +83,9 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "C4", "RUF"]
-ignore = ["B008", "RUF012"]
+# E501 is delegated to `ruff format`, which enforces the same width on code and
+# leaves only unsplittable string literals (SQL, URLs, messages) behind.
+ignore = ["E501", "B008", "RUF012"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["E501"]
