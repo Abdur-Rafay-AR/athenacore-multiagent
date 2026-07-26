@@ -132,6 +132,9 @@ fastapi = pytest.importorskip("fastapi", reason="requires the [api] extra")
 
 @pytest.fixture
 def client(tmp_path):
+    # starlette's TestClient needs httpx at runtime; skip rather than fail so a
+    # missing test dependency never looks like a product bug.
+    pytest.importorskip("httpx", reason="TestClient requires httpx")
     from fastapi.testclient import TestClient
 
     from athenacore.api.server import create_app
