@@ -9,7 +9,7 @@ an agent as a separate pip package therefore requires no changes here.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from athenacore.config import Settings
 from athenacore.errors import ConfigurationError
@@ -60,9 +60,10 @@ def _load_plugins() -> None:
                     "agent plugin failed to load", extra={"plugin": entry.name, "error": str(exc)}
                 )
                 continue
-            if isinstance(loaded, type) and getattr(loaded, "name", None):
-                _REGISTRY.setdefault(loaded.name.lower(), loaded)
-                log.debug("loaded agent plugin", extra={"agent": loaded.name})
+            plugin_name = getattr(loaded, "name", None)
+            if isinstance(loaded, type) and isinstance(plugin_name, str) and plugin_name:
+                _REGISTRY.setdefault(plugin_name.lower(), cast("type[Agent]", loaded))
+                log.debug("loaded agent plugin", extra={"agent": plugin_name})
     except Exception as exc:  # pragma: no cover - importlib.metadata edge cases
         log.debug("plugin discovery skipped", extra={"error": str(exc)})
 

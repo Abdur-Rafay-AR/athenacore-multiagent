@@ -19,7 +19,7 @@ import os
 import sys
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from athenacore import __version__
 from athenacore.config import Settings
@@ -30,8 +30,8 @@ from athenacore.logging_setup import configure_logging
 # used in the live trace. Force UTF-8 before anything prints.
 if hasattr(sys.stdout, "reconfigure"):  # pragma: no cover - platform dependent
     try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
+        cast("Any", sys.stdout).reconfigure(encoding="utf-8", errors="replace")
+        cast("Any", sys.stderr).reconfigure(encoding="utf-8", errors="replace")
     except Exception:
         pass
 

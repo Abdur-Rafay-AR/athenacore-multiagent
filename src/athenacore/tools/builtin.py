@@ -15,7 +15,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import datetime, timezone
 from typing import Any
 
@@ -30,7 +30,7 @@ log = get_logger(__name__)
 
 # -- calculator --------------------------------------------------------------
 
-_BIN_OPS = {
+_BIN_OPS: dict[type[ast.operator], Callable[[Any, Any], Any]] = {
     ast.Add: operator.add,
     ast.Sub: operator.sub,
     ast.Mult: operator.mul,
@@ -39,7 +39,10 @@ _BIN_OPS = {
     ast.Mod: operator.mod,
     ast.Pow: operator.pow,
 }
-_UNARY_OPS = {ast.UAdd: operator.pos, ast.USub: operator.neg}
+_UNARY_OPS: dict[type[ast.unaryop], Callable[[Any], Any]] = {
+    ast.UAdd: operator.pos,
+    ast.USub: operator.neg,
+}
 _FUNCTIONS: dict[str, Any] = {
     "abs": abs,
     "round": round,
