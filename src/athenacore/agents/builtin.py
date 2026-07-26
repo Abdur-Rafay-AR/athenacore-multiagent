@@ -8,7 +8,7 @@ last week's conclusions.
 
 Prompts here are written to be blunt and constraint-heavy, because that is what
 makes 7B-class local models behave. They read as over-specified for a frontier
-model, and that trade is intentional — the default path for this project is a
+model, and that trade is intentional - the default path for this project is a
 laptop running Ollama.
 """
 
@@ -121,7 +121,7 @@ class CriticAgent(Agent):
         return (
             "Devil's Advocate.\n"
             "Your job is to find what is wrong with the current position before reality "
-            "does. Steelman it first, then attack that version — attacking a weak "
+            "does. Steelman it first, then attack that version - attacking a weak "
             "restatement is worthless.\n"
             "For each objection give: the claim you are attacking (cite it), why it may "
             "fail, and what evidence would settle it.\n"

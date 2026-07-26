@@ -3,7 +3,7 @@
 A thin FastAPI layer over the engine: no business logic lives here, it only maps
 requests onto the same objects the CLI uses. The interesting endpoint is
 ``POST /runs/stream``, which runs a graph in a worker thread and forwards the
-event bus to the client as Server-Sent Events — so a browser sees each agent
+event bus to the client as Server-Sent Events - so a browser sees each agent
 start, recall memory, call tools and finish, live.
 
 Install with ``pip install 'athenacore[api]'`` and start with ``athenacore serve``.

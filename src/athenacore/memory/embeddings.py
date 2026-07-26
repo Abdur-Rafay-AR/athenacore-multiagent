@@ -5,7 +5,7 @@ work (see :class:`CallableEmbedder`). But a project that only works after a
 600 MB download is a project most people never run, so the default is
 :class:`HashingEmbedder`: a deterministic, offline, pure-stdlib text embedder.
 
-How it works — it is the classic hashing trick over character n-grams plus word
+How it works - it is the classic hashing trick over character n-grams plus word
 unigrams and bigrams:
 
 1. Normalise the text (casefold, collapse whitespace, strip punctuation).
@@ -13,7 +13,7 @@ unigrams and bigrams:
    words. Character n-grams are what give it robustness to typos, plurals and
    morphology without a stemmer.
 3. Hash each feature to a bucket with a stable digest (``blake2b``, so vectors
-   are reproducible across processes and Python versions — unlike ``hash()``).
+   are reproducible across processes and Python versions - unlike ``hash()``).
 4. Weight by sub-linear term frequency, then L2-normalise.
 
 Cosine similarity over those vectors is a genuine lexical-overlap signal: it will

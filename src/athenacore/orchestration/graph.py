@@ -1,7 +1,7 @@
 """The agent graph.
 
 A run is a DAG of agent invocations. Nodes declare their dependencies, and the
-executor runs each *level* of the topological order in parallel — so a research
+executor runs each *level* of the topological order in parallel - so a research
 agent and a fact-checker with no relationship to each other genuinely run at the
 same time, while a synthesizer waits for both.
 
@@ -102,7 +102,7 @@ class AgentGraph:
         return self
 
     def then(self, name: str, agent: str | None = None, **kwargs: Any) -> AgentGraph:
-        """Append a node depending on all current leaves — the linear-chain
+        """Append a node depending on all current leaves - the linear-chain
         shorthand that covers most hand-built graphs::
 
             AgentGraph().then("research").then("critic").then("synthesizer")
@@ -141,7 +141,7 @@ class AgentGraph:
         return name in self._nodes
 
     def leaves(self) -> list[str]:
-        """Nodes nothing depends on — the graph's outputs."""
+        """Nodes nothing depends on - the graph's outputs."""
         depended = {dep for node in self._nodes.values() for dep in node.depends_on}
         return [name for name in self._nodes if name not in depended]
 
@@ -152,7 +152,7 @@ class AgentGraph:
         return [n.name for n in self._nodes.values() if name in n.depends_on]
 
     def descendants(self, name: str) -> set[str]:
-        """Every node reachable from ``name`` — used to skip a failed branch."""
+        """Every node reachable from ``name`` - used to skip a failed branch."""
         seen: set[str] = set()
         stack = list(self.dependents(name))
         while stack:
@@ -218,7 +218,7 @@ class AgentGraph:
 
     @property
     def max_width(self) -> int:
-        """Widest level — the most agents that can run at once."""
+        """Widest level - the most agents that can run at once."""
         return max((len(level) for level in self.levels()), default=0)
 
     # -- serialisation -------------------------------------------------------

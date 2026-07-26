@@ -2,19 +2,19 @@
 
 Every agent runs the same cycle, defined once here:
 
-1. **Recall** — pull relevant memory for this topic using the agent's own recall
+1. **Recall** - pull relevant memory for this topic using the agent's own recall
    policy (which kinds it cares about, how much budget it gets).
-2. **Compose** — build a system prompt (role + tools + output contract) and a
+2. **Compose** - build a system prompt (role + tools + output contract) and a
    user prompt (recalled memory + upstream agent outputs + the task).
-3. **Generate** — call the provider, then run the tool loop until the model stops
+3. **Generate** - call the provider, then run the tool loop until the model stops
    asking for tools or hits the per-turn cap.
-4. **Persist** — write the result to shared memory as a typed entry, tagged with
+4. **Persist** - write the result to shared memory as a typed entry, tagged with
    the run, model, latency and any citations it made.
 
 Subclasses normally override only :attr:`role`, :attr:`system_prompt`,
 :attr:`entry_kind` and :attr:`recall_policy`. That constraint is the point: it
-keeps agents to a few dozen lines each and makes the interesting behaviour —
-memory, tools, orchestration — shared rather than copy-pasted.
+keeps agents to a few dozen lines each and makes the interesting behaviour:
+memory, tools, orchestration - shared rather than copy-pasted.
 """
 
 from __future__ import annotations
@@ -57,7 +57,7 @@ class RecallPolicy:
     recency/salience driven."""
 
     include_own_previous: bool = True
-    """When False, the agent does not see its own prior output — used to stop
+    """When False, the agent does not see its own prior output - used to stop
     critics from anchoring on their earlier critiques."""
 
 
@@ -158,7 +158,7 @@ class Agent(abc.ABC):
     @property
     @abc.abstractmethod
     def system_prompt(self) -> str:
-        """The role instruction. First line should name the role — the offline
+        """The role instruction. First line should name the role - the offline
         Echo provider and the logs both key off it."""
 
     def build_task_prompt(self, ctx: AgentContext, recall: RecallResult) -> str:
@@ -292,8 +292,8 @@ class Agent(abc.ABC):
     def _generate(self, messages: list[Message]) -> tuple[str, Usage, list[ToolResult]]:
         """Call the model, servicing tool requests until it stops asking.
 
-        The loop is bounded twice over — by ``max_tool_calls`` and by the fact
-        that each iteration must produce at least one new call — so a model stuck
+        The loop is bounded twice over - by ``max_tool_calls`` and by the fact
+        that each iteration must produce at least one new call - so a model stuck
         in a tool loop costs a fixed, small number of turns.
         """
         options: dict[str, Any] = {}

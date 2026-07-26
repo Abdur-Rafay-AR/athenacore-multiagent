@@ -4,7 +4,7 @@
 
 **Multi-agent collaboration with a memory that actually remembers.**
 
-Agents research, attack each other's conclusions, and adjudicate — over a shared,
+Agents research, attack each other's conclusions, and adjudicate - over a shared,
 searchable, self-compacting memory that survives across sessions.
 
 [![CI](https://github.com/Abdur-Rafay-AR/athenacore-multiagent/actions/workflows/ci.yml/badge.svg)](https://github.com/Abdur-Rafay-AR/athenacore-multiagent/actions/workflows/ci.yml)
@@ -23,7 +23,7 @@ searchable, self-compacting memory that survives across sessions.
 
 Most "multi-agent" demos are one model called in a loop with the transcript pasted
 back in. Two things break immediately: the transcript outgrows the context window,
-and the agents never really disagree — they politely restate each other.
+and the agents never really disagree - they politely restate each other.
 
 AthenaCore attacks both problems directly.
 
@@ -31,17 +31,17 @@ AthenaCore attacks both problems directly.
 immutable, typed entry in a SQLite database. Recall blends BM25 full-text search,
 embedding similarity, exponential recency decay and per-entry salience, then drops
 near-duplicates with MMR and fits the result to a token budget. When a topic
-outgrows that budget, older entries are folded into a durable summary and archived —
+outgrows that budget, older entries are folded into a durable summary and archived:
 never deleted, and reversible.
 
 **Disagreement is structural.** The critic literally cannot see its own previous
 critiques, so it cannot re-litigate them. In debate mode each agent must explicitly
 `CONCEDE`, `SHARPEN` or `HOLD` against the other's latest position, and the debate
 stops once round-to-round cosine similarity shows positions have actually stopped
-moving — measured convergence, not a fixed round count.
+moving - measured convergence, not a fixed round count.
 
-And it runs on your laptop. The core engine has **zero dependencies** — standard
-library only — and the default model is a local one through Ollama.
+And it runs on your laptop. The core engine has **zero dependencies** - standard
+library only - and the default model is a local one through Ollama.
 
 ```
 $ athenacore run "Is refining capacity the real EV bottleneck by 2030?" \
@@ -70,7 +70,7 @@ $ athenacore run "Is refining capacity the real EV bottleneck by 2030?" \
 pip install -e ".[ui,api]"
 ```
 
-**Try it with no model at all.** The `echo` provider is deterministic and offline —
+**Try it with no model at all.** The `echo` provider is deterministic and offline:
 it exercises the entire system, so you can see the machinery before committing to a
 download:
 
@@ -122,7 +122,7 @@ flowchart LR
     FC --> S
 ```
 
-If a node fails, only *its* downstream branch is skipped — unrelated branches finish
+If a node fails, only *its* downstream branch is skipped - unrelated branches finish
 and the run reports `partial` rather than throwing away good work. Memory is written
 as each agent completes, so even a cancelled run keeps what it learned.
 
@@ -169,7 +169,7 @@ black box you have to trust.
 | `summarizer` | Synthesis Editor | Compresses while **preserving disagreement** by name |
 | `planner` | Planner | Dependency-ordered steps, each with a success test |
 
-Each agent has its own **recall policy** — the critic sees claims to attack, the
+Each agent has its own **recall policy** - the critic sees claims to attack, the
 summarizer sees everything, the planner mostly sees conclusions. Feeding every agent
 the same context is the easiest way to get seven bland restatements.
 
@@ -181,7 +181,7 @@ the same context is the easiest way to get seven bland restatements.
 | `research-critique-synthesis` | research → (critic ∥ factcheck) → synthesizer | medium |
 | `red-team` | research → 2 independent critics ∥ factcheck → synthesizer | high |
 | `deep-dive` | everything, ending in a plan | high |
-| `catch-up` | no new research — just report where the topic stands | low |
+| `catch-up` | no new research - just report where the topic stands | low |
 | `solo:<agent>` | any single agent | low |
 
 ---
@@ -243,7 +243,7 @@ graph = (
 report = orchestrator.run(graph, topic="t", query="...")
 ```
 
-**Add your own agent** — a role, a recall policy and a prompt:
+**Add your own agent** - a role, a recall policy and a prompt:
 
 ```python
 from athenacore.agents import Agent, RecallPolicy, register_agent
@@ -290,7 +290,7 @@ Set `ATHENA_MODEL` to `provider:model`:
 | `anthropic` | `anthropic:claude-sonnet-4-5` | Needs `ATHENA_ANTHROPIC_API_KEY` |
 | `groq`, `together`, `deepseek`, `openrouter`, `mistral`, `fireworks` | `groq:llama-3.3-70b` | OpenAI-compatible; base URLs preconfigured |
 | `lmstudio`, `vllm`, `llamacpp` | `vllm:my-model` | Local OpenAI-compatible servers |
-| `echo` | `echo:test` | Deterministic, offline — for tests and demos |
+| `echo` | `echo:test` | Deterministic, offline - for tests and demos |
 
 All providers speak HTTP through `urllib`. No SDKs, no version conflicts.
 
@@ -324,7 +324,7 @@ A few decisions that are load-bearing, explained in full in
   run. FastAPI and Streamlit are optional extras.
 - **SQLite over a vector database.** A topic holds thousands of entries, not
   millions. SQLite gives durable transactions, real BM25 via FTS5, and a single-file
-  artifact you can copy and inspect — with nothing to operate.
+  artifact you can copy and inspect - with nothing to operate.
 - **Offline embeddings by default.** A deterministic signed-hashing embedder over
   word and character n-grams. Weaker than a transformer, but it is the *second*
   signal behind BM25, it needs no download, and `CallableEmbedder` swaps in a real
@@ -351,7 +351,7 @@ The suite never touches the network: it runs against the deterministic `echo`
 provider and temporary SQLite files. Store tests are a conformance suite
 parametrised over both the SQLite and in-memory implementations.
 
-Contributions welcome — see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Contributions welcome - see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 

@@ -110,7 +110,7 @@ def _brief(settings: Settings) -> AgentGraph:
 
 
 def _catch_up(settings: Settings) -> AgentGraph:
-    """No new research — just re-read the topic and report its state.
+    """No new research - just re-read the topic and report its state.
 
     This is the preset that shows off persistent memory: run it on a topic you
     worked on last week and it tells you where things stand.
@@ -138,7 +138,7 @@ def _red_team(settings: Settings) -> AgentGraph:
     """Two independent critics attacking in parallel, then adjudication.
 
     Two critics at different temperatures find meaningfully different objections
-    than one critic asked twice — the parallel structure is doing real work here.
+    than one critic asked twice - the parallel structure is doing real work here.
     """
     return AgentGraph(
         [

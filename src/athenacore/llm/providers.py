@@ -1,6 +1,6 @@
 """Concrete providers: Ollama, OpenAI-compatible, Anthropic, and two fakes.
 
-The OpenAI-compatible provider is the workhorse — the same class talks to OpenAI,
+The OpenAI-compatible provider is the workhorse - the same class talks to OpenAI,
 Groq, Together, DeepSeek, OpenRouter, vLLM, llama.cpp and LM Studio, since they
 all expose ``/chat/completions``. Point ``ATHENA_OPENAI_BASE_URL`` at any of them.
 """
@@ -287,8 +287,8 @@ class EchoProvider(LLMProvider):
     """Deterministic offline provider.
 
     This is what makes the project testable and demoable with no model, no daemon
-    and no network. It does not pretend to be intelligent — it reflects structure
-    back — but it exercises every code path: prompts, streaming, tool protocol
+    and no network. It does not pretend to be intelligent - it reflects structure
+    back - but it exercises every code path: prompts, streaming, tool protocol
     parsing, usage accounting, memory writes and compaction.
 
     Set ``ATHENA_MODEL=echo:test`` to run the whole system offline.

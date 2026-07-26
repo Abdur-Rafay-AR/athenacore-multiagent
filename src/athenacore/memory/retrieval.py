@@ -4,15 +4,15 @@ The whole value of a persistent-memory system is deciding *which* memories to pu
 in front of a model. This module implements that decision as an explicit,
 inspectable pipeline rather than a similarity call:
 
-1. **Candidate gathering** — union of (a) BM25 hits from the full-text index and
+1. **Candidate gathering** - union of (a) BM25 hits from the full-text index and
    (b) the most recent live entries for the topic. Recency alone is what makes
    the system work with no query at all (e.g. the summarizer).
-2. **Scoring** — four signals, each normalised to ``[0, 1]`` across candidates,
+2. **Scoring** - four signals, each normalised to ``[0, 1]`` across candidates,
    combined with configurable weights: keyword relevance, embedding cosine,
    exponential recency decay, and salience.
-3. **Diversification** — Maximal Marginal Relevance drops near-duplicates, which
+3. **Diversification** - Maximal Marginal Relevance drops near-duplicates, which
    matters a lot here because agents re-state each other constantly.
-4. **Budgeting** — entries are admitted until the token budget is spent, so a
+4. **Budgeting** - entries are admitted until the token budget is spent, so a
    prompt can never blow the context window.
 
 Every returned item keeps its per-signal breakdown so the UI can show an operator
@@ -147,7 +147,7 @@ class MemoryRetriever:
     def recent(
         self, topic: str, *, limit: int = 10, kinds: Sequence[EntryKind] | None = None
     ) -> list[Entry]:
-        """Plain chronological recall — no scoring. Use when order is the point."""
+        """Plain chronological recall - no scoring. Use when order is the point."""
         entries = self.store.query_entries(
             EntryFilter(
                 topic=topic,

@@ -1,7 +1,7 @@
 """Command-line interface.
 
 Built on ``argparse`` rather than Typer/Click so the CLI works from a bare
-interpreter with nothing installed — which is the same reason the core engine has
+interpreter with nothing installed - which is the same reason the core engine has
 no dependencies.
 
     athenacore run "question" --topic energy --preset red-team
@@ -162,7 +162,7 @@ def cmd_debate(args: argparse.Namespace) -> int:
 
 
 def cmd_recall(args: argparse.Namespace) -> int:
-    """Query memory exactly the way agents do — the debugging tool for recall."""
+    """Query memory exactly the way agents do - the debugging tool for recall."""
     settings = _settings_from_args(args)
     from athenacore.memory.embeddings import HashingEmbedder
     from athenacore.memory.retrieval import MemoryRetriever
@@ -327,7 +327,7 @@ def cmd_export(args: argparse.Namespace) -> int:
                 stamp = entry.created_at.strftime("%Y-%m-%d %H:%M")
                 suffix = " *(archived)*" if entry.archived else ""
                 lines += [
-                    f"## {entry.kind.icon} {entry.agent} — {entry.kind.value}{suffix}",
+                    f"## {entry.kind.icon} {entry.agent} - {entry.kind.value}{suffix}",
                     f"_{stamp}_" + (f" · `{entry.model}`" if entry.model else ""),
                     "",
                     entry.content,

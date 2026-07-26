@@ -53,7 +53,7 @@ class ScoredEntry:
     """An entry plus the ranking signals that selected it.
 
     The breakdown is kept rather than collapsed into one number so the UI can
-    explain *why* a memory surfaced — which is the difference between a system an
+    explain *why* a memory surfaced - which is the difference between a system an
     operator trusts and a black box.
     """
 
@@ -141,7 +141,7 @@ class MemoryStore(abc.ABC):
     def timeline(
         self, topic: str, *, limit: int = 200, include_archived: bool = True
     ) -> list[Entry]:
-        """Chronological history of a topic, oldest first — the audit view."""
+        """Chronological history of a topic, oldest first - the audit view."""
         return self.query_entries(
             EntryFilter(
                 topic=topic,

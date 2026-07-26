@@ -1,9 +1,9 @@
 """Provider abstraction.
 
 One interface, four backends, no SDK dependencies: everything speaks HTTP through
-``urllib``. The base class owns the parts that are identical for every provider —
+``urllib``. The base class owns the parts that are identical for every provider:
 retry with jittered exponential backoff, timeout handling, usage accounting,
-streaming-to-blocking fallback — so a new provider is roughly 40 lines.
+streaming-to-blocking fallback - so a new provider is roughly 40 lines.
 """
 
 from __future__ import annotations

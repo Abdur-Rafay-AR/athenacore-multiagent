@@ -8,7 +8,7 @@ let recall work against a much denser log.
 The policy is intentionally conservative:
 
 * Only triggers above ``compaction_threshold_tokens`` of *live* tokens.
-* Never touches the newest ``compaction_keep_recent`` entries — recent context is
+* Never touches the newest ``compaction_keep_recent`` entries - recent context is
   where most value is.
 * Never folds away protected kinds (``summary``, ``decision``, ``note``): human
   notes and prior conclusions survive verbatim, forever.

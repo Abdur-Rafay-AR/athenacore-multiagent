@@ -2,7 +2,7 @@
 
 Kept apart from ``app.py`` so the page logic stays readable. Colours are defined
 once, per entry kind, and reused by the entry cards, the timeline and the
-charts — so an agent's colour means the same thing everywhere in the interface.
+charts - so an agent's colour means the same thing everywhere in the interface.
 """
 
 from __future__ import annotations
@@ -230,8 +230,8 @@ def activity_chart(activity: list[tuple[str, int]], *, height: int = 90) -> str:
     """A column chart of daily activity, rendered as plain HTML.
 
     Deliberately not ``st.bar_chart``: that pulls in pandas, which is a heavy
-    dependency for one chart and — as seen on locked-down Windows hosts where
-    pandas' compiled extensions are blocked — a single point of failure for the
+    dependency for one chart and - as seen on locked-down Windows hosts where
+    pandas' compiled extensions are blocked - a single point of failure for the
     whole page. Divs always render.
     """
     if not activity:

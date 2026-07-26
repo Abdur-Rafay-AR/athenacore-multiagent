@@ -8,7 +8,7 @@ plain-text protocol that any instruction-following model can produce:
 
 The agent loop parses those lines, executes the tools, appends the results as an
 observation, and asks the model to continue. Simple, debuggable, and it degrades
-gracefully — a model that ignores tools entirely still produces a valid answer.
+gracefully - a model that ignores tools entirely still produces a valid answer.
 
 Tools declare a JSON-schema-shaped spec, so the same registry can be handed to a
 native function-calling backend later without changing any tool code.
@@ -110,7 +110,7 @@ class Tool(abc.ABC):
         args = ", ".join(
             f'"{key}": <{meta.get("type", "any")}>' for key, meta in self.parameters.items()
         )
-        return f"TOOL: {self.name} {{{args}}}  — {self.description}"
+        return f"TOOL: {self.name} {{{args}}}  - {self.description}"
 
     def validate(self, arguments: dict[str, Any]) -> dict[str, Any]:
         """Check required keys and drop unknown ones.
@@ -174,7 +174,7 @@ class ToolRegistry:
         lines += [f"- {tool.usage_line()}" for tool in self._tools.values()]
         lines += [
             "",
-            "Rules: call at most one tool per line. After a call, stop and wait — the",
+            "Rules: call at most one tool per line. After a call, stop and wait - the",
             "result arrives as an OBSERVATION and you may then continue or answer.",
             "If no tool is needed, just answer directly.",
         ]

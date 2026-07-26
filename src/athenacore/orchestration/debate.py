@@ -9,7 +9,7 @@ agents agreeing with each other or cut off while positions are still moving, so
 this module measures it: each round's combined output is embedded and compared
 with the previous round's. Once cosine similarity crosses
 ``debate_convergence_threshold``, positions have stopped moving and the debate
-ends early. That check costs nothing — the embedder is local and offline.
+ends early. That check costs nothing - the embedder is local and offline.
 """
 
 from __future__ import annotations
@@ -299,7 +299,7 @@ class DebateOrchestrator:
         """Frame each turn so participants respond rather than restate.
 
         Round one is an opening statement; later rounds explicitly demand
-        movement — concede, sharpen or hold with new support — which is what stops
+        movement - concede, sharpen or hold with new support - which is what stops
         a debate from becoming two monologues.
         """
         if index == 1:

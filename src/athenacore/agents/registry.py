@@ -1,7 +1,7 @@
 """Agent registry and construction.
 
-Agents are looked up by name everywhere — CLI flags, graph definitions, API
-payloads, UI dropdowns — so they live in one registry that also discovers
+Agents are looked up by name everywhere - CLI flags, graph definitions, API
+payloads, UI dropdowns - so they live in one registry that also discovers
 third-party agents through the ``athenacore.agents`` entry-point group. Shipping
 an agent as a separate pip package therefore requires no changes here.
 """
@@ -92,7 +92,7 @@ def get_agent_class(name: str) -> type:
 
 
 def describe_agents() -> list[dict[str, Any]]:
-    """Metadata for every registered agent — powers ``athenacore agents`` and
+    """Metadata for every registered agent - powers ``athenacore agents`` and
     the UI's agent picker."""
     _ensure_builtins()
     out = []
@@ -154,7 +154,7 @@ class AgentFactory:
         return agent
 
     def get(self, name: str) -> Agent:
-        """Cached variant — repeated graph nodes reuse one instance."""
+        """Cached variant - repeated graph nodes reuse one instance."""
         key = name.strip().lower()
         if key not in self._cache:
             self._cache[key] = self.create(key)

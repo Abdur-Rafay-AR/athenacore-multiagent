@@ -2,13 +2,13 @@
 
 Five views over one engine:
 
-* **Console** — configure and launch a run, watch the live event trace, read each
+* **Console** - configure and launch a run, watch the live event trace, read each
   agent's output, and see the graph light up as nodes complete.
-* **Memory** — search the topic's memory the way agents do, with the ranking
+* **Memory** - search the topic's memory the way agents do, with the ranking
   breakdown shown per result, and adjust salience or archive entries by hand.
-* **Timeline** — the append-only history of a topic, including archived entries.
-* **Runs** — past runs with their status, cost and node states.
-* **Analytics** — where the tokens went, which agents contribute, activity over
+* **Timeline** - the append-only history of a topic, including archived entries.
+* **Runs** - past runs with their status, cost and node states.
+* **Analytics** - where the tokens went, which agents contribute, activity over
   time, and the memory compaction picture.
 
 Run it with ``athenacore ui`` (or ``streamlit run src/athenacore/ui/app.py``).
@@ -114,7 +114,7 @@ def render_sidebar(settings: Settings) -> tuple[str, str]:
     st.sidebar.text_input(
         "Model spec",
         key="model",
-        help="provider:model — " + ", ".join(available_providers()),
+        help="provider:model - " + ", ".join(available_providers()),
     )
     st.sidebar.slider("Temperature", 0.0, 1.5, float(settings.temperature), 0.05, key="temperature")
 
@@ -213,7 +213,7 @@ def view_console(settings: Settings, topic: str) -> None:
         st.markdown(
             theme.empty_state(
                 "Name a topic in the sidebar to begin.",
-                "A topic is a long-lived memory thread — every run against it builds on the last.",
+                "A topic is a long-lived memory thread - every run against it builds on the last.",
             ),
             unsafe_allow_html=True,
         )
@@ -235,7 +235,7 @@ def view_console(settings: Settings, topic: str) -> None:
             if preset_key in PRESETS:
                 preset = PRESETS[preset_key]
                 st.caption(
-                    f"**{preset.title}** — {preset.summary}  \nToken appetite: {preset.cost}"
+                    f"**{preset.title}** - {preset.summary}  \nToken appetite: {preset.cost}"
                 )
 
         query = st.text_area(
@@ -279,7 +279,7 @@ def view_console(settings: Settings, topic: str) -> None:
             rounds = st.slider("Max rounds", 1, 8, settings.debate_rounds, key="rounds")
 
         st.caption(
-            "Rounds stop early once positions stop moving — measured by cosine similarity "
+            "Rounds stop early once positions stop moving - measured by cosine similarity "
             f"between consecutive rounds (threshold {settings.debate_convergence_threshold})."
         )
 
@@ -324,7 +324,7 @@ def render_report(report: Any) -> None:
         st.info(f"Skipped: {', '.join(report.skipped)}")
     if report.compaction and report.compaction.performed:
         st.success(
-            f"🗜️ Memory compacted — {report.compaction.reason} "
+            f"🗜️ Memory compacted - {report.compaction.reason} "
             f"({report.compaction.tokens_before} → {report.compaction.tokens_after} tokens)"
         )
 
@@ -490,7 +490,7 @@ def view_memory(settings: Settings, topic: str) -> None:
             )
             if c1.button("Save salience", key=f"save-{entry.id}"):
                 store.set_salience(entry.id, new_salience)
-                st.success("Updated — this changes how strongly it surfaces in future recalls.")
+                st.success("Updated - this changes how strongly it surfaces in future recalls.")
             if c2.button("Archive", key=f"arch-{entry.id}"):
                 store.archive_entries([entry.id])
                 st.success("Archived. It stays in the history but is excluded from recall.")
@@ -527,7 +527,7 @@ def view_timeline(settings: Settings, topic: str) -> None:
         st.markdown(theme.empty_state("No entries match these filters."), unsafe_allow_html=True)
         return
 
-    st.caption(f"{len(entries)} entries, oldest first — the full audit trail for this topic.")
+    st.caption(f"{len(entries)} entries, oldest first - the full audit trail for this topic.")
     for entry in entries:
         st.markdown(theme.entry_card(entry.to_dict()), unsafe_allow_html=True)
 

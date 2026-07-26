@@ -3,7 +3,7 @@
 Why SQLite rather than a vector database: a topic's memory is small (thousands of
 entries), and SQLite gives durable transactions, real full-text search via FTS5,
 and a single-file artifact an operator can copy, diff or inspect with any
-tool — with zero services to run. Embeddings live in the same file as float32
+tool - with zero services to run. Embeddings live in the same file as float32
 blobs and are scored in Python, which stays comfortably fast well past the point
 where a hobby project needs anything else.
 

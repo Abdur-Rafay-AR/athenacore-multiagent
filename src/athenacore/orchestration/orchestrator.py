@@ -256,7 +256,7 @@ class Orchestrator:
         topic: str,
         query: str = "",
     ) -> RunReport:
-        """Convenience path for a single agent — the old ``run_agent`` behaviour."""
+        """Convenience path for a single agent - the old ``run_agent`` behaviour."""
         graph = AgentGraph.linear(agent_name, name=f"solo:{agent_name}")
         return self.run(graph, topic=topic, query=query)
 
