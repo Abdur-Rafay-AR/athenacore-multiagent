@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32"
+     role="img" aria-label="Crucible">
+  <title>Crucible</title>
+  <!-- A C-ring cut open on the right, holding a molten charge. Built as filled
+       geometry rather than a stroked arc so the terminals cut cleanly on the
+       radius and one file renders correctly at every size. -->
+  <path fill="#d9663a"
+        d="M27.07 8.81A13.2 13.2 0 1 0 27.07 23.19L23.38 20.79A8.8 8.8 0 1 1 23.38 11.21Z" />
+  <circle cx="16" cy="16" r="3.3" fill="#e8a33d" />
+</svg>

@@ -1,6 +1,8 @@
 <div align="center">
 
-# ⚗️ Crucible
+<img src="assets/logo.svg" width="72" height="72" alt="" />
+
+# Crucible
 
 **Multi-agent collaboration with a memory that actually remembers.**
 
