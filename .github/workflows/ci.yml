@@ -65,12 +65,8 @@ jobs:
       - name: Format check
         run: ruff format --check .
 
-      # Advisory for now: the codebase is annotated throughout but not yet
-      # strict-clean, and a red badge for gradual typing helps nobody. Tighten
-      # the mypy settings first, then drop continue-on-error.
       - name: Types
         run: mypy src
-        continue-on-error: true
 
   no-dependency-core:
     name: core imports with no dependencies

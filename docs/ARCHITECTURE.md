@@ -236,7 +236,7 @@ that would make every similarity 1.0.
 
 ## Testing
 
-176 tests, entirely offline. No model, no daemon, no network.
+176 tests, entirely offline, with mypy enforced in CI. No model, no daemon, no network.
 
 - Store tests are a **conformance suite** parametrised over both implementations.
 - Retrieval tests assert *behaviour* - that recency weighting prefers new entries,

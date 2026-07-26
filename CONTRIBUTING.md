@@ -20,7 +20,7 @@ wrong place; mark it `@pytest.mark.slow` and expect it to be skipped in CI.
 ## Before opening a PR
 
 ```bash
-ruff check . && ruff format . && pytest
+ruff check . && ruff format . && mypy src && pytest
 ```
 
 That is what CI runs, plus the same suite on Linux, macOS and Windows across

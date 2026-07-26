@@ -342,12 +342,12 @@ A few decisions that are load-bearing, explained in full in
 
 ```bash
 pip install -e ".[dev,ui,api]"
-pytest                    # 120 tests, fully offline
+pytest                    # 176 tests, fully offline
 pytest --cov=athenacore
 ruff check . && mypy src
 ```
 
-The suite never touches the network: it runs against the deterministic `echo`
+Type checking is enforced in CI, not advisory. The suite never touches the network: it runs against the deterministic `echo`
 provider and temporary SQLite files. Store tests are a conformance suite
 parametrised over both the SQLite and in-memory implementations.
 
