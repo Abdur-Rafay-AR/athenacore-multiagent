@@ -335,6 +335,10 @@ class SqliteMemoryStore(MemoryStore):
         if self.get_topic(new) is not None:
             raise MemoryError_(f"topic {new!r} already exists")
         with self._tx() as cur:
+            # entries.topic references topics(name), so renaming the parent
+            # orphans the children mid-statement. Deferring the check to COMMIT
+            # lets both sides move within one transaction.
+            cur.execute("PRAGMA defer_foreign_keys = ON")
             cur.execute("UPDATE topics SET name=?, updated_at=? WHERE name=?", (new, to_iso(utcnow()), old))
             cur.execute("UPDATE entries SET topic=? WHERE topic=?", (new, old))
             cur.execute("UPDATE runs SET topic=? WHERE topic=?", (new, old))
