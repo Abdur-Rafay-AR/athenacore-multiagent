@@ -95,18 +95,18 @@ class CalculatorTool(Tool):
                 return node.value
             raise ToolError("only numeric literals are allowed", tool=self.name)
         if isinstance(node, ast.BinOp):
-            op = _BIN_OPS.get(type(node.op))
-            if op is None:
+            binary = _BIN_OPS.get(type(node.op))
+            if binary is None:
                 raise ToolError(f"operator {type(node.op).__name__} is not allowed", tool=self.name)
             left, right = self._eval(node.left), self._eval(node.right)
             if isinstance(node.op, ast.Pow) and abs(right) > _MAX_POW_EXPONENT:
                 raise ToolError("exponent too large", tool=self.name)
-            return op(left, right)
+            return binary(left, right)
         if isinstance(node, ast.UnaryOp):
-            op = _UNARY_OPS.get(type(node.op))
-            if op is None:
+            unary = _UNARY_OPS.get(type(node.op))
+            if unary is None:
                 raise ToolError("unary operator not allowed", tool=self.name)
-            return op(self._eval(node.operand))
+            return unary(self._eval(node.operand))
         if isinstance(node, ast.Call):
             if not isinstance(node.func, ast.Name) or node.func.id not in _FUNCTIONS:
                 raise ToolError("only whitelisted functions may be called", tool=self.name)
@@ -263,7 +263,7 @@ class WebSearchTool(Tool):
 
     def _search_package(self, query: str, limit: int) -> list[dict[str, str]]:
         try:
-            from duckduckgo_search import DDGS  # type: ignore[import-not-found]
+            from duckduckgo_search import DDGS
         except ImportError:
             return []
         try:

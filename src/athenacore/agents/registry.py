@@ -24,10 +24,10 @@ if TYPE_CHECKING:  # pragma: no cover
 
 log = get_logger(__name__)
 
-_REGISTRY: dict[str, type] = {}
+_REGISTRY: dict[str, type[Agent]] = {}
 _PLUGINS_LOADED = False
 
-A = TypeVar("A", bound=type)
+A = TypeVar("A", bound="type[Agent]")
 
 
 def register_agent(cls: A) -> A:
@@ -79,7 +79,7 @@ def available_agents() -> list[str]:
     return sorted(_REGISTRY)
 
 
-def get_agent_class(name: str) -> type:
+def get_agent_class(name: str) -> type[Agent]:
     _ensure_builtins()
     key = name.strip().lower()
     cls = _REGISTRY.get(key)

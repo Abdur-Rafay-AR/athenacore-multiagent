@@ -65,8 +65,8 @@ def _defaults(cls: type) -> dict[str, Any]:
     for f in fields(cls):
         if f.default is not MISSING:
             out[f.name] = f.default
-        elif f.default_factory is not MISSING:  # type: ignore[misc]
-            out[f.name] = f.default_factory()  # type: ignore[misc]
+        elif f.default_factory is not MISSING:
+            out[f.name] = f.default_factory()
     return out
 
 

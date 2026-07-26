@@ -365,7 +365,7 @@ class Orchestrator:
                     run_id=run.id,
                     node=node.name,
                     message=f"{tool_result.call.name} → {'ok' if tool_result.ok else 'error'}",
-                    **tool_result.to_dict(),
+                    tool=tool_result.to_dict(),
                 )
             if result.recall:
                 self.bus.publish(
@@ -459,7 +459,7 @@ class Orchestrator:
                     f"compacted {len(result.archived_ids)} entries "
                     f"({result.tokens_before} → {result.tokens_after} tokens)"
                 ),
-                **result.to_dict(),
+                compaction=result.to_dict(),
             )
         return result
 

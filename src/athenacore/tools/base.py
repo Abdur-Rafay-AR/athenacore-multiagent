@@ -230,9 +230,10 @@ def parse_tool_calls(text: str) -> list[ToolCall]:
         raw_args = (match.group("args") or "").strip()
         arguments: dict[str, Any] = {}
         if raw_args:
-            arguments = _loose_json(raw_args)
-            if arguments is None:
+            parsed = _loose_json(raw_args)
+            if parsed is None:
                 continue
+            arguments = parsed
         calls.append(ToolCall(name=name, arguments=arguments, raw=match.group(0).strip()))
     return calls
 
