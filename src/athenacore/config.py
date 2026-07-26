@@ -11,7 +11,7 @@ Every knob is documented in ``.env.example``.
 from __future__ import annotations
 
 import os
-from dataclasses import asdict, dataclass, field, fields, replace
+from dataclasses import MISSING, asdict, dataclass, field, fields, replace
 from pathlib import Path
 from typing import Any
 
@@ -52,6 +52,22 @@ def load_dotenv(path: str | os.PathLike[str] = ".env", *, override: bool = False
         if override or key not in os.environ:
             os.environ[key] = value
     return parsed
+
+
+def _defaults(cls: type) -> dict[str, Any]:
+    """Field defaults for a ``slots=True`` dataclass.
+
+    Slotted dataclasses replace class-level defaults with slot descriptors, so
+    ``cls.model`` is a descriptor rather than ``"ollama:llama3.1"``. The defaults
+    have to be read back off the field metadata.
+    """
+    out: dict[str, Any] = {}
+    for f in fields(cls):
+        if f.default is not MISSING:
+            out[f.name] = f.default
+        elif f.default_factory is not MISSING:  # type: ignore[misc]
+            out[f.name] = f.default_factory()  # type: ignore[misc]
+    return out
 
 
 def _env(name: str, default: str | None = None) -> str | None:
@@ -141,16 +157,17 @@ class RetrievalSettings:
 
     @classmethod
     def from_env(cls) -> RetrievalSettings:
+        d = _defaults(cls)
         return cls(
-            max_entries=_env_int("RECALL_MAX_ENTRIES", cls.max_entries),
-            candidate_pool=_env_int("RECALL_CANDIDATES", cls.candidate_pool),
-            keyword_weight=_env_float("RECALL_W_KEYWORD", cls.keyword_weight),
-            semantic_weight=_env_float("RECALL_W_SEMANTIC", cls.semantic_weight),
-            recency_weight=_env_float("RECALL_W_RECENCY", cls.recency_weight),
-            salience_weight=_env_float("RECALL_W_SALIENCE", cls.salience_weight),
-            recency_half_life_hours=_env_float("RECALL_HALF_LIFE_H", cls.recency_half_life_hours),
-            mmr_lambda=_env_float("RECALL_MMR_LAMBDA", cls.mmr_lambda),
-            include_archived=_env_bool("RECALL_INCLUDE_ARCHIVED", cls.include_archived),
+            max_entries=_env_int("RECALL_MAX_ENTRIES", d["max_entries"]),
+            candidate_pool=_env_int("RECALL_CANDIDATES", d["candidate_pool"]),
+            keyword_weight=_env_float("RECALL_W_KEYWORD", d["keyword_weight"]),
+            semantic_weight=_env_float("RECALL_W_SEMANTIC", d["semantic_weight"]),
+            recency_weight=_env_float("RECALL_W_RECENCY", d["recency_weight"]),
+            salience_weight=_env_float("RECALL_W_SALIENCE", d["salience_weight"]),
+            recency_half_life_hours=_env_float("RECALL_HALF_LIFE_H", d["recency_half_life_hours"]),
+            mmr_lambda=_env_float("RECALL_MMR_LAMBDA", d["mmr_lambda"]),
+            include_archived=_env_bool("RECALL_INCLUDE_ARCHIVED", d["include_archived"]),
         )
 
 
@@ -239,43 +256,44 @@ class Settings:
         if dotenv is not None:
             load_dotenv(dotenv)
 
+        d = _defaults(cls)
         data_dir = Path(_env("DATA_DIR", str(DEFAULT_DATA_DIR)) or DEFAULT_DATA_DIR)
         db_default = data_dir / "athenacore.sqlite3"
 
         base = cls(
-            model=_env("MODEL", cls.model) or cls.model,
-            temperature=_env_float("TEMPERATURE", cls.temperature),
-            max_output_tokens=_env_int("MAX_OUTPUT_TOKENS", cls.max_output_tokens),
-            request_timeout_s=_env_float("REQUEST_TIMEOUT_S", cls.request_timeout_s),
-            max_retries=_env_int("MAX_RETRIES", cls.max_retries),
-            retry_backoff_s=_env_float("RETRY_BACKOFF_S", cls.retry_backoff_s),
-            ollama_host=_env("OLLAMA_HOST", cls.ollama_host) or cls.ollama_host,
-            openai_base_url=_env("OPENAI_BASE_URL", cls.openai_base_url) or cls.openai_base_url,
+            model=_env("MODEL", d["model"]) or d["model"],
+            temperature=_env_float("TEMPERATURE", d["temperature"]),
+            max_output_tokens=_env_int("MAX_OUTPUT_TOKENS", d["max_output_tokens"]),
+            request_timeout_s=_env_float("REQUEST_TIMEOUT_S", d["request_timeout_s"]),
+            max_retries=_env_int("MAX_RETRIES", d["max_retries"]),
+            retry_backoff_s=_env_float("RETRY_BACKOFF_S", d["retry_backoff_s"]),
+            ollama_host=_env("OLLAMA_HOST", d["ollama_host"]) or d["ollama_host"],
+            openai_base_url=_env("OPENAI_BASE_URL", d["openai_base_url"]) or d["openai_base_url"],
             openai_api_key=_env("OPENAI_API_KEY"),
             anthropic_base_url=(
-                _env("ANTHROPIC_BASE_URL", cls.anthropic_base_url) or cls.anthropic_base_url
+                _env("ANTHROPIC_BASE_URL", d["anthropic_base_url"]) or d["anthropic_base_url"]
             ),
             anthropic_api_key=_env("ANTHROPIC_API_KEY"),
             data_dir=data_dir,
             database_path=Path(_env("DATABASE_PATH", str(db_default)) or db_default),
             retrieval=RetrievalSettings.from_env(),
-            context_token_budget=_env_int("CONTEXT_TOKEN_BUDGET", cls.context_token_budget),
+            context_token_budget=_env_int("CONTEXT_TOKEN_BUDGET", d["context_token_budget"]),
             compaction_threshold_tokens=_env_int(
-                "COMPACTION_THRESHOLD_TOKENS", cls.compaction_threshold_tokens
+                "COMPACTION_THRESHOLD_TOKENS", d["compaction_threshold_tokens"]
             ),
-            compaction_keep_recent=_env_int("COMPACTION_KEEP_RECENT", cls.compaction_keep_recent),
-            embeddings_enabled=_env_bool("EMBEDDINGS_ENABLED", cls.embeddings_enabled),
-            embedding_dims=_env_int("EMBEDDING_DIMS", cls.embedding_dims),
-            max_parallel_agents=_env_int("MAX_PARALLEL_AGENTS", cls.max_parallel_agents),
-            debate_rounds=_env_int("DEBATE_ROUNDS", cls.debate_rounds),
+            compaction_keep_recent=_env_int("COMPACTION_KEEP_RECENT", d["compaction_keep_recent"]),
+            embeddings_enabled=_env_bool("EMBEDDINGS_ENABLED", d["embeddings_enabled"]),
+            embedding_dims=_env_int("EMBEDDING_DIMS", d["embedding_dims"]),
+            max_parallel_agents=_env_int("MAX_PARALLEL_AGENTS", d["max_parallel_agents"]),
+            debate_rounds=_env_int("DEBATE_ROUNDS", d["debate_rounds"]),
             debate_convergence_threshold=_env_float(
-                "DEBATE_CONVERGENCE", cls.debate_convergence_threshold
+                "DEBATE_CONVERGENCE", d["debate_convergence_threshold"]
             ),
-            tools_enabled=_env_bool("TOOLS_ENABLED", cls.tools_enabled),
-            max_tool_calls_per_turn=_env_int("MAX_TOOL_CALLS", cls.max_tool_calls_per_turn),
-            web_search_enabled=_env_bool("WEB_SEARCH_ENABLED", cls.web_search_enabled),
-            log_level=(_env("LOG_LEVEL", cls.log_level) or cls.log_level).upper(),
-            log_json=_env_bool("LOG_JSON", cls.log_json),
+            tools_enabled=_env_bool("TOOLS_ENABLED", d["tools_enabled"]),
+            max_tool_calls_per_turn=_env_int("MAX_TOOL_CALLS", d["max_tool_calls_per_turn"]),
+            web_search_enabled=_env_bool("WEB_SEARCH_ENABLED", d["web_search_enabled"]),
+            log_level=(_env("LOG_LEVEL", d["log_level"]) or d["log_level"]).upper(),
+            log_json=_env_bool("LOG_JSON", d["log_json"]),
         )
         settings = base.with_overrides(**overrides) if overrides else base
         settings.validate()

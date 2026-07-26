@@ -28,6 +28,9 @@ from athenacore.llm.providers import (
 
 ProviderFactory = Callable[[str, Settings], LLMProvider]
 
+# Read once so alias factories can tell "user set a base URL" from "still default".
+_DEFAULT_OPENAI_BASE_URL = Settings().openai_base_url
+
 # Hosted services that speak the OpenAI schema. Registering them as aliases means
 # `ATHENA_MODEL=groq:llama-3.3-70b` works without touching a base URL by hand.
 OPENAI_COMPATIBLE_ALIASES: dict[str, str] = {
@@ -101,7 +104,7 @@ for _alias, _url in OPENAI_COMPATIBLE_ALIASES.items():
             # An explicitly configured base URL always wins over the alias default.
             base = (
                 settings.openai_base_url
-                if settings.openai_base_url != Settings.openai_base_url
+                if settings.openai_base_url != _DEFAULT_OPENAI_BASE_URL
                 else alias_url
             )
             return OpenAICompatibleProvider(
