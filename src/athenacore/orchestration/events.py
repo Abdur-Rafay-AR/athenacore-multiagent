@@ -159,6 +159,11 @@ class EventQueue:
             }:
                 return
 
+    @property
+    def empty(self) -> bool:
+        """Whether nothing is currently buffered. Used by pollers such as the UI."""
+        return self._queue.empty()
+
     def drain(self) -> list[Event]:
         """Everything currently buffered, without blocking."""
         out: list[Event] = []
