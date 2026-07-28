@@ -15,6 +15,9 @@ importable from its own module and is documented in ``docs/ARCHITECTURE.md``.
 
 from __future__ import annotations
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
+
 from crucible.config import RetrievalSettings, Settings
 from crucible.errors import (
     ConfigurationError,
@@ -30,7 +33,13 @@ from crucible.orchestration.graph import AgentGraph, GraphNode
 from crucible.orchestration.orchestrator import Orchestrator, RunReport
 from crucible.orchestration.presets import PRESETS, build_preset
 
-__version__ = "0.3.0"
+# Single-sourced from the installed distribution metadata, so pyproject.toml is
+# the only place a version number is written. Duplicating it in code is the
+# classic way to ship a release whose reported version is a lie.
+try:
+    __version__ = _pkg_version("crucible-agents")
+except PackageNotFoundError:  # running from a source tree with no install
+    __version__ = "0.0.0.dev0"
 
 __all__ = [
     "PRESETS",

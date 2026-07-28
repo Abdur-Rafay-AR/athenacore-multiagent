@@ -17,6 +17,7 @@ import threading
 from collections.abc import Iterator
 from typing import Any
 
+from crucible import __version__
 from crucible.config import Settings
 from crucible.errors import ConfigurationError, CrucibleError
 from crucible.logging_setup import get_logger
@@ -75,7 +76,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title="Crucible",
-        version="0.3.0",
+        version=__version__,
         description=(
             "Multi-agent collaboration with persistent, searchable memory. "
             "Agents share one memory per topic; runs are graphs of agent invocations."
@@ -115,7 +116,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             store.close()
         return {
             "status": "ok",
-            "version": "0.3.0",
+            "version": __version__,
             "model": settings.model,
             "fts": stats.get("fts", False),
             "entries": stats["entries"],
