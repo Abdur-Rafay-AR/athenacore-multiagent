@@ -13,8 +13,9 @@ All notable changes to this project are documented here, following
 - The import name, CLI command and logging namespace are all now `crucible`. The
   environment variable prefix is `CRUCIBLE_` (previously `ATHENA_`), and the
   default database is `data/crucible.sqlite3`.
-- The distribution is published as `crucible-agents`, because `crucible` is
-  already taken on PyPI. `pip install crucible-agents`, `import crucible`.
+- The distribution is named `crucible-agents`, because `crucible` is already
+  taken on PyPI. The import name is `crucible` either way. Not published to
+  PyPI yet; install from source or from the Git URL.
 
 ### Migration
 Rename your environment variables from `ATHENA_*` to `CRUCIBLE_*`, and either

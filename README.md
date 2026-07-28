@@ -69,7 +69,15 @@ $ crucible run "Is refining capacity the real EV bottleneck by 2030?" \
 ## Quickstart
 
 ```bash
+git clone https://github.com/Abdur-Rafay-AR/crucible
+cd crucible
 pip install -e ".[ui,api]"
+```
+
+Or install straight from GitHub without cloning:
+
+```bash
+pip install "crucible-agents[ui,api] @ git+https://github.com/Abdur-Rafay-AR/crucible"
 ```
 
 **Try it with no model at all.** The `echo` provider is deterministic and offline:
